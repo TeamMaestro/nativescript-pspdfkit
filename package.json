@@ -1,0 +1,46 @@
+{
+  "name": "nativescript-pspdfkit",
+  "version": "1.0.0",
+  "description": "Nativescript implementation of PSPDFKit.",
+  "main": "pspdfkit.js",
+  "typings": "index.d.ts",
+  "nativescript": {
+    "platforms": {
+      "android": "2.1.1",
+      "ios": "2.1.1"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "demo.ios": "npm run preparedemo && cd demo && tns emulate ios",
+    "demo.android": "npm run preparedemo && cd demo && tns run android",
+    "preparedemo": "npm run build && cd demo && tns plugin remove nativescript-pspdfkit && tns plugin add .. && tns install",
+    "setup": "cd demo && npm install && cd .. && npm run build && cd demo && tns plugin add .. && cd .."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sean-perkins/nativescript-pspdfkit.git"
+  },
+  "keywords": [
+    "NativeScript",
+    "JavaScript",
+    "Android",
+    "iOS",
+    "PSPDFKit",
+    "Typescript"
+  ],
+  "author": {
+    "name": "Sean Perkins",
+    "email": "sean@meetmaestro.com"
+  },
+  "bugs": {
+    "url": "https://github.com/sean-perkins/nativescript-pspdfkit/issues"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/sean-perkins/nativescript-pspsdfkit",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "tns-platform-declarations": "^2.0.0",
+    "typescript": "^1.8.10"
+  }
+}
