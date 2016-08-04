@@ -10,6 +10,10 @@
 		android:largeScreens="true"
 		android:xlargeScreens="true"/>
 
+	<activity
+        android:name="com.pspdfkit.ui.PSPDFActivity"
+        android:windowSoftInputMode="adjustNothing"/>
+
 	<uses-sdk
 		android:minSdkVersion="17"
 		android:targetSdkVersion="__APILEVEL__"/>

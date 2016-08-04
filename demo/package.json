@@ -1,15 +1,15 @@
 {
   "nativescript": {
     "id": "org.nativescript.demo",
-    "tns-ios": {
+    "tns-android": {
       "version": "2.1.1"
     },
-    "tns-android": {
+    "tns-ios": {
       "version": "2.1.1"
     }
   },
   "dependencies": {
-    "nativescript-yourplugin": "file:..",
+    "nativescript-pspdfkit": "file:..",
     "tns-core-modules": "^2.0.0"
   },
   "devDependencies": {

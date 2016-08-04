@@ -1,5 +1,1 @@
-import {Common} from './yourplugin.common';
-
-export class YourPlugin extends Common {
-
-}
+export * from './src/android/pspdfkit';
