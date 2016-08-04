@@ -6,7 +6,7 @@ var app = require('application');
 export class HelloWorldModel extends Observable {
     public message: string;
     private pspdfkit: TNSPSPDFKit;
-    private licenseKey: string = 'UFftF6AAASrcEEz7OIoUeu5b4oeVhEkkp2zLT/ZVGA/3jBJsKmERHG7ujW7QEWIvQ96iTAIwQ0y/iL+AGIIOrTp3dxgozUUvSnvuDct3/b/dMXvI0AGJACfNmnN/am/kzpVOvx2PjtClBgjUfbaqMa29p4292a1lRQlTKHHET/FyJugz94FLZWPtyZksjWxsDghfH2vxEJl76Rt1H0zt/BNW8iljyNAOO3RzKPI7nm8XDTxGoAZrexSk5Rq2M9ARM9ld3zMt5wiIXWVe0MvO1yh39d/WUqCXfqQa/9rmvSBbGebdcc889o9IcuA/tjx2Olv1mKC7D54wMAGjMpfQqbuYR9qjCu8bTYvPZ6CJj4lhJUChHUb1OQVr/+JaXTQy9lxcF3e4lohNVPmPZmnml9LL/tlaviggxvGuTmXVNo/sRPyPH/SDj/K6tHPyIMud';
+    private licenseKey: string;
 
     constructor() {
         super();

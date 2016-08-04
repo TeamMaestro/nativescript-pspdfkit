@@ -15,7 +15,8 @@
     "demo.ios": "npm run preparedemo && cd demo && tns emulate ios",
     "demo.android": "npm run preparedemo && cd demo && tns emulate android",
     "preparedemo": "npm run build && cd demo && tns plugin remove nativescript-pspdfkit && tns plugin add .. && tns install",
-    "setup": "cd demo && npm install && cd .. && npm run build && cd demo && tns plugin add .. && cd .."
+    "setup": "cd demo && npm install && cd .. && npm run build && cd demo && tns plugin add .. && cd ..",
+    "postinstall": "scripts/install.js"
   },
   "repository": {
     "type": "git",
@@ -43,5 +44,9 @@
     "tns-platform-declarations": "^2.0.0",
     "tns-core-modules": "^2.0.0",
     "typescript": "^1.8.10"
+  },
+  "dependencies": {
+    "fs": "0.0.2",
+    "prompt": "^1.0.0"
   }
 }

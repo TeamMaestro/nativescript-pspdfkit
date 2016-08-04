@@ -1,4 +1,8 @@
-*.js
+/*.js
+scripts/dev_install.js
+src/*.js
+src/*/*.js
+!scripts/install.js
 *.js.map
 *.log
 demo/app/*.js
@@ -6,4 +10,5 @@ demo/*.d.ts
 demo/lib
 demo/platforms
 demo/node_modules
+demo/hooks
 node_modules
