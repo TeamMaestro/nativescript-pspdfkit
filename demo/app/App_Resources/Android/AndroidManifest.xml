@@ -27,7 +27,8 @@
 		android:allowBackup="true"
 		android:icon="@drawable/icon"
 		android:label="@string/app_name"
-		android:theme="@style/AppTheme" >
+		android:theme="@style/AppTheme"
+		android:largeHeap="true" >
 		<activity
 			android:name="com.tns.NativeScriptActivity"
 			android:label="@string/title_activity_kimera"
@@ -40,5 +41,10 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="com.tns.ErrorReportActivity"/>
+		<activity
+		android:launchMode="singleTask"
+        android:name="com.pspdfkit.ui.PSPDFActivity"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:windowSoftInputMode="adjustNothing" />
 	</application>
 </manifest>

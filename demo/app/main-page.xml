@@ -1,5 +1,5 @@
-<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded">
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" xmlns:ps="nativescript-pspdfkit">
   <StackLayout>
-    <Label text="{{ message }}" class="message" textWrap="true"/>
+    <!--<ps:PDFViewer src="~/example.pdf" onNext="onNext" onCompleted="onCompleted" onError="onError"/>-->
   </StackLayout>
 </Page>

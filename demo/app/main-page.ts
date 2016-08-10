@@ -8,3 +8,15 @@ export function pageLoaded(args: observable.EventData) {
     var page = <pages.Page>args.object;
     page.bindingContext = new HelloWorldModel();
 }
+
+export function onError(e){
+    console.dump(e)
+}
+
+export function onCompleted(){
+    console.log('loaded')
+}
+
+export function onNext(data){
+    console.log(data);
+}
