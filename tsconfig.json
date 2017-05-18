@@ -1,19 +1,30 @@
 {
     "compilerOptions": {
-        "target": "es5",
         "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": false,
         "removeComments": true,
-        "experimentalDecorators": true,
+        "preserveConstEnums": true,
+        "sourceMap": false,
+        "declaration": true,
+        "noLib": false,
         "noEmitHelpers": true,
-        "declaration": true
+        "experimentalDecorators": true,
+        "lib": [
+            "es6",
+            "dom"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "./node_modules/tns-core-modules/*",
+                "./node_modules/*"
+            ]
+        }
     },
-    "files": [
-      "node_modules/tns-core-modules/tns-core-modules.d.ts",
-      "node_modules/tns-platform-declarations/android17.d.ts",
-      "node_modules/tns-platform-declarations/ios.d.ts",
-      "node_modules/tns-platform-declarations/org.nativescript.widgets.d.ts",
-      "pspdfkit.ios.ts",
-      "pspdfkit.android.ts"
-    ],
-    "compileOnSave": false
+    "exclude": [
+        "node_modules",
+        "platforms",
+        "demo"
+    ]
 }
