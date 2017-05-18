@@ -1,13 +1,12 @@
 {
   "name": "nativescript-pspdfkit",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Nativescript implementation of PSPDFKit.",
-  "main": "pspdfkit.js",
-  "typings": "index.d.ts",
+  "main": "pspdfkit",
   "nativescript": {
     "platforms": {
-      "android": "2.1.1",
-      "ios": "2.1.1"
+      "android": "3.0.0",
+      "ios": "3.0.0"
     }
   },
   "scripts": {
@@ -40,8 +39,11 @@
   "homepage": "https://github.com/sean-perkins/nativescript-pspdfkit",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "tns-platform-declarations": "^2.0.0",
-    "tns-core-modules": "^2.0.0",
-    "typescript": "^1.8.10"
+    "tns-platform-declarations": "^3.0.0",
+    "tns-core-modules": "^3.0.0",
+    "typescript": "^2.2.0"
+  },
+  "peerDependencies": {
+    "tns-core-modules": "3.0.0"
   }
 }

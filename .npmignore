@@ -6,3 +6,5 @@ demo/
 !.d.ts
 !src/android/*
 !src/ios/*
+.idea
+.vscode
