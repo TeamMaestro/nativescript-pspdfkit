@@ -40,17 +40,6 @@ export class TNSPSPDFView extends View {
     public createNativeView() {
         return UIView.new();
     }
-    public initNativeView() {
-        this.controller = PSPDFViewController.alloc().initWithDocumentConfiguration(getDocument(this.src), PSPDFConfiguration.alloc().initWithBuilder(this.config));
-        this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-        let parent = topmost().ios.controller.visibleViewController;
-        parent.addChildViewController(this.controller);
-        this.controller.view.frame = this.nativeView.bounds;
-        this.nativeView.addSubview(this.controller.view);
-        this.controller.didMoveToParentViewController(parent);
-    }
-    public disposeNativeView() { }
-
     public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number) {
         const nativeView = this.nativeView;
         if (nativeView) {
@@ -62,7 +51,16 @@ export class TNSPSPDFView extends View {
     [srcProperty.setNative](src: string) {
         if (this.controller) {
             this.controller.document = getDocument(src);
+        } else {
+            this.controller = PSPDFViewController.alloc().initWithDocumentConfiguration(getDocument(this.src), PSPDFConfiguration.alloc().initWithBuilder(this.config));
+            this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+            let parent = topmost().ios.controller.visibleViewController;
+            parent.addChildViewController(this.controller);
+            this.controller.view.frame = this.nativeView.bounds;
+            this.nativeView.addSubview(this.controller.view);
+            this.controller.didMoveToParentViewController(parent);
         }
+
     }
     set scrollDirection(direction: string) {
         switch (direction) {
@@ -123,15 +121,17 @@ srcProperty.register(TNSPSPDFView);
 function getDocument(src: string) {
     let fileUrl;
     let document;
-    if (src.startsWith('~')) {
-        fileUrl = fs.path.join(fs.knownFolders.currentApp().path, src.replace('~', ''));
-        document = PSPDFDocument.documentWithURL(NSURL.fileURLWithPath(fileUrl));
-    } else if (src.startsWith('http://') || src.startsWith('https://')) {
-        const data = NSData.alloc().initWithContentsOfURL(NSURL.URLWithString(src));
-        document = PSPDFDocument.documentWithData(data);
-        document.UID = Guid.next();
-    } else if (src.startsWith('/')) {
-        document = PSPDFDocument.documentWithURL(NSURL.fileURLWithPath(src));
+    if (src) {
+        if (src.startsWith('~')) {
+            fileUrl = fs.path.join(fs.knownFolders.currentApp().path, src.replace('~', ''));
+            document = PSPDFDocument.documentWithURL(NSURL.fileURLWithPath(fileUrl));
+        } else if (src.startsWith('http://') || src.startsWith('https://')) {
+            const data = NSData.alloc().initWithContentsOfURL(NSURL.URLWithString(src));
+            document = PSPDFDocument.documentWithData(data);
+            document.UID = Guid.next();
+        } else if (src.startsWith('/')) {
+            document = PSPDFDocument.documentWithURL(NSURL.fileURLWithPath(src));
+        }
     }
     return document;
 }
