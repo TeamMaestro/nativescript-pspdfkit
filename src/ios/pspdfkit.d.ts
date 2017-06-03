@@ -9,6 +9,7 @@ export declare class TNSPSPDFView extends View {
     nativeView: UIView;
     controller: PSPDFViewController;
     config: PSPDFConfigurationBuilder;
+    private _worker;
     constructor();
     createNativeView(): UIView;
     initNativeView(): void;

@@ -3,6 +3,7 @@ import { ContentView } from "tns-core-modules/ui/content-view";
 import { View, Property, layout } from "tns-core-modules/ui/core/view";
 import * as fs from "file-system";
 import { Guid } from "../common";
+import { fromObject } from "tns-core-modules/data/observable";
 
 export class TNSPSPDFKit {
 
@@ -33,21 +34,61 @@ export class TNSPSPDFView extends View {
     nativeView: UIView;
     controller: PSPDFViewController;
     config: PSPDFConfigurationBuilder;
+    private _worker: Worker;
     constructor() {
         super();
         this.config = PSPDFConfigurationBuilder.alloc();
+        this._worker = new Worker('../worker');
+        this._worker.onmessage = (msg) => {
+            if (msg.data.status === 1) {
+                this.notify({
+                    eventName: 'status',
+                    object: fromObject({ value: 'downloading' })
+                });
+            } else if (msg.data.status === 2 && msg.data.filePath) {
+                this.notify({
+                    eventName: 'status',
+                    object: fromObject({ value: 'completed' })
+                });
+                this.controller = PSPDFViewController.alloc().initWithDocumentConfiguration(getDocument(msg.data.filePath), PSPDFConfiguration.alloc().initWithBuilder(this.config));
+                this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+                let parent = topmost().ios.controller.visibleViewController;
+                parent.addChildViewController(this.controller);
+                this.controller.view.frame = this.nativeView.bounds;
+                this.nativeView.addSubview(this.controller.view);
+                this.controller.didMoveToParentViewController(parent);
+            }
+            if (msg.data.progress) {
+                this.notify({
+                    eventName: 'progress',
+                    object: fromObject({ value: msg.data.progress })
+                });
+            }
+        }
+
+        this._worker.onerror = (err) => {
+            this.notify({
+                eventName: 'status',
+                object: fromObject({ value: 'failed' })
+            });
+        }
     }
     public createNativeView() {
         return UIView.new();
     }
     public initNativeView() {
-        this.controller = PSPDFViewController.alloc().initWithDocumentConfiguration(getDocument(this.src), PSPDFConfiguration.alloc().initWithBuilder(this.config));
-        this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-        let parent = topmost().ios.controller.visibleViewController;
-        parent.addChildViewController(this.controller);
-        this.controller.view.frame = this.nativeView.bounds;
-        this.nativeView.addSubview(this.controller.view);
-        this.controller.didMoveToParentViewController(parent);
+        if (this.src.startsWith('http://') || this.src.startsWith('https://')) {
+            downloadDocument(this.src, this._worker);
+        } else {
+            this.controller = PSPDFViewController.alloc().initWithDocumentConfiguration(getDocument(this.src), PSPDFConfiguration.alloc().initWithBuilder(this.config));
+            this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+            let parent = topmost().ios.controller.visibleViewController;
+            parent.addChildViewController(this.controller);
+            this.controller.view.frame = this.nativeView.bounds;
+            this.nativeView.addSubview(this.controller.view);
+            this.controller.didMoveToParentViewController(parent);
+        }
+
     }
     public disposeNativeView() { }
 
@@ -64,6 +105,7 @@ export class TNSPSPDFView extends View {
             this.controller.document = getDocument(src);
         }
     }
+
     set scrollDirection(direction: string) {
         switch (direction) {
             case 'horizontal':
@@ -118,20 +160,30 @@ export class TNSPSPDFView extends View {
 
     }
 }
+
 srcProperty.register(TNSPSPDFView);
 
+function downloadDocument(src: string, worker: Worker) {
+    const url = NSString.stringWithString(src);
+    const parts = url.componentsSeparatedByString("/");
+    const filename = parts.lastObject;
+    const tempPath = fs.knownFolders.temp().path;
+    const fullPath = fs.path.join(tempPath, filename);
+    worker.postMessage({
+        link: src,
+        path: fullPath
+    });
+}
 function getDocument(src: string) {
     let fileUrl;
     let document;
     if (src.startsWith('~')) {
         fileUrl = fs.path.join(fs.knownFolders.currentApp().path, src.replace('~', ''));
         document = PSPDFDocument.documentWithURL(NSURL.fileURLWithPath(fileUrl));
-    } else if (src.startsWith('http://') || src.startsWith('https://')) {
-        const data = NSData.alloc().initWithContentsOfURL(NSURL.URLWithString(src));
-        document = PSPDFDocument.documentWithData(data);
-        document.UID = Guid.next();
     } else if (src.startsWith('/')) {
         document = PSPDFDocument.documentWithURL(NSURL.fileURLWithPath(src));
     }
     return document;
 }
+
+type DOWNLOAD_STATUS = 'downloading' | 'completed' | 'failed';
