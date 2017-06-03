@@ -7,4 +7,10 @@ export function pageLoaded(args: observable.EventData) {
     // Get the event sender
     var page = <pages.Page>args.object;
     page.bindingContext = new HelloWorldModel();
+    page.getViewById('pdf').on('progress',(data)=>{
+        console.dir(data.object.get('value'));
+    })
+    page.getViewById('pdf').on('status',(data)=>{
+        console.dir(data.object.get('value'));
+    })
 }
