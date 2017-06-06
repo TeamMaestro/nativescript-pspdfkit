@@ -76,21 +76,23 @@ export class TNSPSPDFView extends View {
     public createNativeView() {
         return UIView.new();
     }
-  
     public initNativeView() {
-        if (this.src.startsWith('http://') || this.src.startsWith('https://')) {
-            downloadDocument(this.src, this._worker);
-        } else {
-            this.controller = PSPDFViewController.alloc().initWithDocumentConfiguration(getDocument(this.src), PSPDFConfiguration.alloc().initWithBuilder(this.config));
-            this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-            let parent = topmost().ios.controller.visibleViewController;
-            parent.addChildViewController(this.controller);
-            this.controller.view.frame = this.nativeView.bounds;
-            this.nativeView.addSubview(this.controller.view);
-            this.controller.didMoveToParentViewController(parent);
+        if (this.src) {
+            if (this.src.startsWith('http://') || this.src.startsWith('https://')) {
+                downloadDocument(this.src, this._worker);
+            } else {
+                this.controller = PSPDFViewController.alloc().initWithDocumentConfiguration(getDocument(this.src), PSPDFConfiguration.alloc().initWithBuilder(this.config));
+                this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+                let parent = topmost().ios.controller.visibleViewController;
+                parent.addChildViewController(this.controller);
+                this.controller.view.frame = this.nativeView.bounds;
+                this.nativeView.addSubview(this.controller.view);
+                this.controller.didMoveToParentViewController(parent);
+            }
         }
 
     }
+    public disposeNativeView() { }
 
     public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number) {
         const nativeView = this.nativeView;
@@ -103,16 +105,9 @@ export class TNSPSPDFView extends View {
     [srcProperty.setNative](src: string) {
         if (this.controller) {
             this.controller.document = getDocument(src);
-        } else {
-            this.controller = PSPDFViewController.alloc().initWithDocumentConfiguration(getDocument(this.src), PSPDFConfiguration.alloc().initWithBuilder(this.config));
-            this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-            let parent = topmost().ios.controller.visibleViewController;
-            parent.addChildViewController(this.controller);
-            this.controller.view.frame = this.nativeView.bounds;
-            this.nativeView.addSubview(this.controller.view);
-            this.controller.didMoveToParentViewController(parent);
+        } else if (this.src.startsWith('http://') || this.src.startsWith('https://')) {
+            downloadDocument(this.src, this._worker);
         }
-
     }
 
     set scrollDirection(direction: string) {
@@ -183,7 +178,6 @@ function downloadDocument(src: string, worker: Worker) {
         path: fullPath
     });
 }
-
 function getDocument(src: string) {
     let fileUrl;
     let document;
