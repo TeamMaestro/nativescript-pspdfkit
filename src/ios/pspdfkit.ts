@@ -92,7 +92,9 @@ export class TNSPSPDFView extends View {
         }
 
     }
-    public disposeNativeView() { }
+    public disposeNativeView() { 
+        this.controller = null;
+    }
 
     public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number) {
         const nativeView = this.nativeView;
