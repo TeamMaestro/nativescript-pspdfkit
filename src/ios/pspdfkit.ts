@@ -4,7 +4,8 @@ import { View, Property, layout } from "tns-core-modules/ui/core/view";
 import * as fs from "file-system";
 import { Guid } from "../common";
 import { fromObject } from "tns-core-modules/data/observable";
-
+import * as types from 'utils/types';
+import { Color } from "tns-core-modules/color";
 export class TNSPSPDFKit {
 
     private appDelegate: any;
@@ -37,7 +38,13 @@ export class TNSPSPDFView extends View {
     private _worker: Worker;
     constructor() {
         super();
-        this.config = PSPDFConfigurationBuilder.alloc();
+        this.controller = PSPDFViewController.new();
+        this.backgroundColor = "#fff";
+    }
+    public createNativeView() {
+        if (!this.controller) {
+            this.controller = PSPDFViewController.new();
+        }
         this._worker = new Worker('../worker');
         this._worker.onmessage = (msg) => {
             if (msg.data.status === 1) {
@@ -50,7 +57,8 @@ export class TNSPSPDFView extends View {
                     eventName: 'status',
                     object: fromObject({ value: 'completed' })
                 });
-                this.controller = PSPDFViewController.alloc().initWithDocumentConfiguration(getDocument(msg.data.filePath), PSPDFConfiguration.alloc().initWithBuilder(this.config));
+
+                this.controller.document = getDocument(msg.data.filePath);
                 this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
                 let parent = topmost().ios.controller.visibleViewController;
                 parent.addChildViewController(this.controller);
@@ -65,15 +73,12 @@ export class TNSPSPDFView extends View {
                 });
             }
         }
-
         this._worker.onerror = (err) => {
             this.notify({
                 eventName: 'status',
                 object: fromObject({ value: 'failed' })
             });
         }
-    }
-    public createNativeView() {
         return UIView.new();
     }
     public initNativeView() {
@@ -81,7 +86,7 @@ export class TNSPSPDFView extends View {
             if (this.src.startsWith('http://') || this.src.startsWith('https://')) {
                 downloadDocument(this.src, this._worker);
             } else {
-                this.controller = PSPDFViewController.alloc().initWithDocumentConfiguration(getDocument(this.src), PSPDFConfiguration.alloc().initWithBuilder(this.config));
+                this.controller.document = getDocument(this.src);
                 this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
                 let parent = topmost().ios.controller.visibleViewController;
                 parent.addChildViewController(this.controller);
@@ -92,7 +97,8 @@ export class TNSPSPDFView extends View {
         }
 
     }
-    public disposeNativeView() { 
+
+    public disposeNativeView() {
         this.controller = null;
     }
 
@@ -104,6 +110,13 @@ export class TNSPSPDFView extends View {
             this.setMeasuredDimension(width, height);
         }
     }
+
+    set backgroundColor(value: string) {
+        this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+            config.backgroundColor = new Color(value).ios;
+        })
+    }
+
     [srcProperty.setNative](src: string) {
         if (this.controller) {
             this.controller.document = getDocument(src);
@@ -112,60 +125,159 @@ export class TNSPSPDFView extends View {
         }
     }
 
+    getAnnotationField(name: string) {
+        if (this.controller && this.controller.document) {
+            const field = this.controller.document.formParser.findAnnotationWithFieldName(name);
+            if (field) {
+                return field.exportValue;
+            } else {
+                return;
+            }
+        }
+        return;
+    }
+
+    getFormField(name: string) {
+        if (this.controller && this.controller.document) {
+            const field = this.controller.document.formParser.findFieldWithFullFieldName(name);
+            if (field) {
+                return field.exportValue;
+            } else {
+                return;
+            }
+        }
+        return;
+    }
+
+    getAllFormFields(): Object {
+        const array = this.controller.document.formParser.formFields
+        let obj = {};
+        const len = array.count;
+        for (let i = 0; i < len; i++) {
+            const item = array.objectAtIndex(i);
+            obj[item.fullyQualifiedName] = { value: item.value };
+        }
+        return obj;
+    }
+
+    setFormField(name: string, value: any) {
+        if (name && value) {
+            const array = this.controller.document.formParser.formFields
+            const len = array.count;
+            for (let i = 0; i < len; i++) {
+                const item = array.objectAtIndex(i);
+                if (item.fullyQualifiedName === name) {
+                    item.value = value;
+                    break;
+                }
+            }
+
+        }
+    }
+
+    setFormFields(obj: Object) {
+        const arr = this.controller.document.formParser.formFields;
+        const len = arr.count;
+        Object.keys(obj).forEach((key, index) => {
+            const item = obj[key];
+            for (let i = 0; i < len; i++) {
+                const field = arr.objectAtIndex(i);
+                if (field.fullyQualifiedName === key) {
+                    field.value = item['value'];
+                    break;
+                }
+            }
+        });
+    }
+    set formsEnabled(enabled: boolean) {
+        if (this.controller && this.controller.document) {
+            this.controller.document.formsEnabled = enabled;
+        }
+    }
+    get formsEnabled(): boolean {
+        if (this.controller && this.controller.document) {
+            return this.controller.document.formsEnabled;
+        }
+        return false;
+    }
     set scrollDirection(direction: string) {
         switch (direction) {
             case 'horizontal':
-                this.config.scrollDirection = PSPDFScrollDirection.Horizontal;
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.scrollDirection = PSPDFScrollDirection.Horizontal;
+                });
                 break;
             default:
-                this.config.scrollDirection = PSPDFScrollDirection.Vertical;
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.scrollDirection = PSPDFScrollDirection.Vertical;
+                });
                 break;
         }
     }
     set fitToWidth(fit: boolean) {
         if (fit) {
-            this.config.fitToWidthEnabled = PSPDFAdaptiveConditional.YES;
+            this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                config.fitToWidthEnabled = PSPDFAdaptiveConditional.YES;
+            });
         } else {
-            this.config.fitToWidthEnabled = PSPDFAdaptiveConditional.Adaptive;
+            this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                config.fitToWidthEnabled = PSPDFAdaptiveConditional.Adaptive;
+            });
         }
     }
     set thumbnailBar(bar: string) {
         switch (bar) {
             case "scrollable":
-                this.config.thumbnailBarMode = PSPDFThumbnailBarMode.Scrollable;
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.thumbnailBarMode = PSPDFThumbnailBarMode.Scrollable;
+                });
                 break;
             case "scrubber":
-                this.config.thumbnailBarMode = PSPDFThumbnailBarMode.ScrubberBar;
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.thumbnailBarMode = PSPDFThumbnailBarMode.ScrubberBar;
+                });
                 break;
-            case "none":
-                this.config.thumbnailBarMode = PSPDFThumbnailBarMode.None;
+            default:
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.thumbnailBarMode = PSPDFThumbnailBarMode.None;
+                });
                 break;
         }
     }
     set scrubberBar(bar: string) {
         switch (bar) {
             case "verticalRight":
-                this.config.scrubberBarType = PSPDFScrubberBarType.VerticalRight;
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.scrubberBarType = PSPDFScrubberBarType.VerticalRight;
+                });
                 break;
             case "verticalLeft":
-                this.config.scrubberBarType = PSPDFScrubberBarType.VerticalLeft;
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.scrubberBarType = PSPDFScrubberBarType.VerticalLeft;
+                });
                 break;
             default:
-                this.config.scrubberBarType = PSPDFScrubberBarType.Horizontal;
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.scrubberBarType = PSPDFScrubberBarType.Horizontal;
+                });
                 break;
         }
     }
     set thumbnailSize(size: string) {
         let sizes = size.split(' ');
         if (sizes.length === 2) {
-            this.config.thumbnailSize = CGSizeMake(parseInt(sizes[0]), parseInt(sizes[1]));
+            this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                config.thumbnailSize = CGSizeMake(parseInt(sizes[0]), parseInt(sizes[1]));
+            });
         } else {
-            this.config.thumbnailSize = CGSizeMake(parseInt(size), parseInt(size));
-
+            this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                config.thumbnailSize = CGSizeMake(parseInt(size), parseInt(size));
+            });
         }
 
     }
 }
+
 
 srcProperty.register(TNSPSPDFView);
 
@@ -180,6 +292,7 @@ function downloadDocument(src: string, worker: Worker) {
         path: fullPath
     });
 }
+
 function getDocument(src: string) {
     let fileUrl;
     let document;
@@ -189,6 +302,7 @@ function getDocument(src: string) {
     } else if (src.startsWith('/')) {
         document = PSPDFDocument.documentWithURL(NSURL.fileURLWithPath(src));
     }
+    document
     return document;
 }
 
