@@ -1,2 +1,2 @@
 platform :ios, '9.0'
-pod 'PSPDFKit', podspec: 'https://customers.pspdfkit.com/cocoapods/TRIAL-x5Cb9iZWqhE4H52eE28aIG5SGZAQv4R5tXKX1mD8jsd3XcS3O7WB1Qdvco3DgWrjUTo4zHDb3bNZmAnMIp0m6A/latest.podspec'
+pod 'PSPDFKit', podspec: 'https://customers.pspdfkit.com/cocoapods/TRIAL-s8mrlenbDaZmRdfHfOk9ckwq97reC3mdRIrZzjNzoqIOnikTXQ670Fi1pzTE7vPlHIArReszXhrcYShwCDooVw/latest.podspec'
