@@ -1,6 +1,6 @@
 {
   "name": "nativescript-pspdfkit",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Nativescript implementation of PSPDFKit.",
   "main": "pspdfkit",
   "nativescript": {
@@ -32,6 +32,13 @@
     "name": "Sean Perkins",
     "email": "sean@meetmaestro.com"
   },
+  "contributors":  [
+    {
+      "name": "Osei Fortune",
+      "email": "fortune.osei@yahoo.com",
+      "url": "https://github.com/triniwiz"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/sean-perkins/nativescript-pspdfkit/issues"
   },
