@@ -1,3 +1,8 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" xmlns:pdfView="nativescript-pspdfkit">
-<pdfView:TNSPSPDFView id="pdf" scrollDirection="horizontal" scrubberBar="verticalRight" thumbnailBar="scrubber" fitToWidth="true" row="1" src="~/example.pdf"></pdfView:TNSPSPDFView>
+<StackLayout>
+<Button text="Get Name" tap="{{getName}}"></Button>
+<Button text="Fill Form" tap="{{fillForm}}"></Button>
+<Button text="Clear Form" tap="{{clearForm}}"></Button>
+<pdfView:TNSPSPDFView  width="50%" formsEnabled="false" thumbnailBar="none" id="pdf" row="1" src="~/OoPdfFormExample.pdf"></pdfView:TNSPSPDFView>
+</StackLayout>
 </Page>
