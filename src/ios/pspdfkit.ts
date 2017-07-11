@@ -118,10 +118,10 @@ export class TNSPSPDFView extends View {
     }
 
     [srcProperty.setNative](src: string) {
-        if (this.controller) {
+        if (src.startsWith('http://') || src.startsWith('https://')) {
+            downloadDocument(src, this._worker);
+        } else if (this.controller) {
             this.controller.document = getDocument(src);
-        } else if (this.src.startsWith('http://') || this.src.startsWith('https://')) {
-            downloadDocument(this.src, this._worker);
         }
     }
 
