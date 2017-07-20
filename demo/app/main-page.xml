@@ -3,6 +3,6 @@
 <Button text="Get Name" tap="{{getName}}"></Button>
 <Button text="Fill Form" tap="{{fillForm}}"></Button>
 <Button text="Clear Form" tap="{{clearForm}}"></Button>
-<pdfView:TNSPSPDFView  width="50%" formsEnabled="false" thumbnailBar="none" id="pdf" row="1" src="http://foersom.com/net/HowTo/data/OoPdfFormExample.pdf"></pdfView:TNSPSPDFView>
+<pdfView:TNSPSPDFView pageMode="single" scrollDirection="vertical" formsEnabled="false" thumbnailBar="none" id="pdf" row="1" src="https://www.ets.org/Media/Tests/GRE/pdf/gre_research_validity_data.pdf"></pdfView:TNSPSPDFView>
 </StackLayout>
 </Page>
