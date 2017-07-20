@@ -2,7 +2,7 @@ import { topmost } from 'tns-core-modules/ui/frame';
 import { ContentView } from "tns-core-modules/ui/content-view";
 import { View, Property, layout } from "tns-core-modules/ui/core/view";
 import * as fs from "file-system";
-import { Guid } from "../common";
+import { Guid, PageMode } from "../common";
 import { fromObject } from "tns-core-modules/data/observable";
 import * as types from 'utils/types';
 import { Color } from "tns-core-modules/color";
@@ -275,6 +275,52 @@ export class TNSPSPDFView extends View {
             });
         }
 
+    }
+    set enableSmallDocumentsZoom(value: boolean) {
+        this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+            config.zoomingSmallDocumentsEnabled = value;
+        });
+    }
+    set maxZoom(value: number) {
+        this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+            config.maximumZoomScale = value;
+        });
+    }
+    set minZoom(value: number) {
+        this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+            config.minimumZoomScale = value;
+        });
+    }
+    set enableFormElementsZoom(value: boolean) {
+        this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+            config.formElementZoomEnabled = value;
+        });
+    }
+    set searchResultZoom(value: number) {
+        this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+            config.searchResultZoomScale = value;
+        });
+    }
+    set pageMode(value: any) {
+        switch (value) {
+            case PageMode.SINGLE:
+            case 'single':
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.pageMode = PSPDFPageMode.Single;
+                });
+                break;
+            case PageMode.DOUBLE:
+            case 'double':
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.pageMode = PSPDFPageMode.Double;
+                });
+                break;
+            default:
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.pageMode = PSPDFPageMode.Automatic;
+                });
+                break;
+        }
     }
 }
 

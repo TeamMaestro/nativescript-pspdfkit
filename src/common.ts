@@ -11,3 +11,9 @@ export class Guid {
         });
     }
 }
+
+export enum PageMode {
+    SINGLE = 0,
+    DOUBLE = 1,
+    AUTOMATIC = 2
+}

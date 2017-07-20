@@ -27,4 +27,10 @@ export declare class TNSPSPDFView extends View {
     thumbnailBar: string;
     scrubberBar: string;
     thumbnailSize: string;
+    enableSmallDocumentsZoom: boolean;
+    maxZoom: number;
+    minZoom: number;
+    enableFormElementsZoom: boolean;
+    searchResultZoom: number;
+    pageMode: any;
 }

@@ -31,6 +31,22 @@ import { TNSPSPDFView } from 'nativescript-pspdfkit';
 import { registerElement } from "nativescript-angular/element-registry";
 registerElement("TNSPSPDFView", () => require("nativescript-pspdfkit").TNSPSPDFView);
 ```
+## API
+
+| Property | Default | Type | Required | Description  |
+| --- | --- | --- | ---| ---|
+| scrollDirection | vertical | string | <ul><li>- [ ] </li></ul> |
+| scrubberBar | horizontal | string  | <ul><li>- [ ] </li></ul> |
+| thumbnailBar | none | boolean | <ul><li>- [ ] </li></ul> | |
+| fitToWidth | false | string | <ul><li>- [ ] </li></ul> |
+| thumbnailSize| Defaults to 88x125 on iPad and 53x75 on iPhone | string | <ul><li>- [ ] </li></ul> |
+| enableSmallDocumentsZoom | true | boolean | <ul><li>- [ ] </li></ul> |
+| pageMode| automatic | string | <ul><li>- [ ] </li></ul> |
+| minZoom | 1 | number | <ul><li>- [ ] </li></ul> |
+| maxZoom | 20 | number | <ul><li>- [ ] </li></ul> |
+| searchResultZoom | 2 | number | <ul><li>- [ ] </li></ul> |
+| formsEnabled | true | boolean | <ul><li>- [ ] </li></ul> |
+| src | null | string | <ul><li>- [x] </li></ul> |
 
 ## Example Image
 ![Image](http://i.imgur.com/FM1ZxuV.png)
