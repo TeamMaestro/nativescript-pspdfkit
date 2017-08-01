@@ -35,7 +35,9 @@ export class TNSPSPDFView extends View {
     nativeView: UIView;
     controller: PSPDFViewController;
     config: PSPDFConfigurationBuilder;
+    private _file: any;
     private _worker: Worker;
+    private _cache: any = PSPDFDiskCacheStrategy.Everything;
     constructor() {
         super();
         this.controller = PSPDFViewController.new();
@@ -57,8 +59,9 @@ export class TNSPSPDFView extends View {
                     eventName: 'status',
                     object: fromObject({ value: 'completed' })
                 });
-
+                this._file = msg.data.filePath;
                 this.controller.document = getDocument(msg.data.filePath);
+                this.controller.document.diskCacheStrategy = this.cache;
                 this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
                 let parent = topmost().ios.controller.visibleViewController;
                 parent.addChildViewController(this.controller);
@@ -87,6 +90,7 @@ export class TNSPSPDFView extends View {
                 downloadDocument(this.src, this._worker);
             } else {
                 this.controller.document = getDocument(this.src);
+                this.controller.document.diskCacheStrategy = this.cache;
                 this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
                 let parent = topmost().ios.controller.visibleViewController;
                 parent.addChildViewController(this.controller);
@@ -95,11 +99,14 @@ export class TNSPSPDFView extends View {
                 this.controller.didMoveToParentViewController(parent);
             }
         }
-
     }
 
     public disposeNativeView() {
         this.controller = null;
+        this._worker.terminate();
+        if (fs.File.exists(this._file)) {
+            fs.File.fromPath(this._file).remove();
+        }
     }
 
     public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number) {
@@ -117,11 +124,32 @@ export class TNSPSPDFView extends View {
         })
     }
 
+    set cache(value: any) {
+        switch (value.toLowerCase()) {
+            case 'nothing':
+                this._cache = PSPDFDiskCacheStrategy.Nothing;
+                break;
+            case 'thumbnails':
+                this._cache = PSPDFDiskCacheStrategy.Thumbnails;
+                break;
+            case 'nearpages':
+                this._cache = PSPDFDiskCacheStrategy.NearPages;
+                break;
+            default:
+                this._cache = PSPDFDiskCacheStrategy.Everything;
+                break;
+        }
+    }
+    get cache() {
+        return this._cache;
+    }
+
     [srcProperty.setNative](src: string) {
         if (src.startsWith('http://') || src.startsWith('https://')) {
             downloadDocument(src, this._worker);
         } else if (this.controller) {
             this.controller.document = getDocument(src);
+            this.controller.document.diskCacheStrategy = this.cache;
         }
     }
 
@@ -323,7 +351,6 @@ export class TNSPSPDFView extends View {
         }
     }
 }
-
 
 srcProperty.register(TNSPSPDFView);
 

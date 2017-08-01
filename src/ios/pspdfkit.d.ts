@@ -9,13 +9,16 @@ export declare class TNSPSPDFView extends View {
     nativeView: UIView;
     controller: PSPDFViewController;
     config: PSPDFConfigurationBuilder;
+    private _file;
     private _worker;
+    private _cache;
     constructor();
     createNativeView(): UIView;
     initNativeView(): void;
     disposeNativeView(): void;
     onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void;
     backgroundColor: string;
+    cache: any;
     getAnnotationField(name: string): any;
     getFormField(name: string): any;
     getAllFormFields(): Object;
