@@ -47,7 +47,14 @@ export class TNSPSPDFView extends View {
         if (!this.controller) {
             this.controller = PSPDFViewController.new();
         }
-        this._worker = new Worker('../worker');
+        if (global.TNS_WEBPACK) {
+            let worker = require("worker-loader!../worker.js");
+            if (typeof worker === 'function') {
+                this._worker = worker();
+            } else {
+                this._worker = worker;
+            }
+        } else { this._worker = new Worker('../worker.js'); }
         this._worker.onmessage = (msg) => {
             if (msg.data.status === 1) {
                 this.notify({
@@ -104,9 +111,6 @@ export class TNSPSPDFView extends View {
     public disposeNativeView() {
         this.controller = null;
         this._worker.terminate();
-        if (fs.File.exists(this._file)) {
-            fs.File.fromPath(this._file).remove();
-        }
     }
 
     public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number) {

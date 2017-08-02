@@ -1,6 +1,6 @@
 {
   "name": "nativescript-pspdfkit",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Nativescript implementation of PSPDFKit.",
   "main": "pspdfkit",
   "nativescript": {
@@ -32,7 +32,7 @@
     "name": "Sean Perkins",
     "email": "sean@meetmaestro.com"
   },
-  "contributors":  [
+  "contributors": [
     {
       "name": "Osei Fortune",
       "email": "fortune.osei@yahoo.com",
@@ -46,9 +46,10 @@
   "homepage": "https://github.com/sean-perkins/nativescript-pspdfkit",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "tns-platform-declarations": "^3.0.0",
     "tns-core-modules": "^3.0.0",
-    "typescript": "^2.2.0"
+    "tns-platform-declarations": "^3.0.0",
+    "typescript": "^2.2.0",
+    "worker-loader": "git+https://github.com/triniwiz/worker-loader.git"
   },
   "peerDependencies": {
     "tns-core-modules": "^3.0.0"
