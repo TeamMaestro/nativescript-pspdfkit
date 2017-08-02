@@ -1,10 +1,10 @@
 require("globals");
-const platform = require("platform");
-const fs = require("file-system");
-const utils = require("utils/utils");
-const downloadPDF = (msg) => {
-    const path = msg.data.path;
-    const link = msg.data.link;
+var platform = require("platform");
+var fs = require("file-system");
+var utils = require("utils/utils");
+function downloadPDF() {
+    var path = msg.data.path;
+    var link = msg.data.link;
     if (platform.isAndroid) {
         var output;
         var input;
@@ -13,9 +13,9 @@ const downloadPDF = (msg) => {
         var previous = 0;
         try {
             var count = 0;
-            const uri = new java.net.URI(link);
-            const url = uri.toURL();
-            const connection = url.openConnection();
+            var uri = new java.net.URI(link);
+            var url = uri.toURL();
+            var connection = url.openConnection();
             fs.File.fromPath(path);
             var file = new java.io.File(path);
             var fileSize = connection.getContentLength();
@@ -59,13 +59,13 @@ const downloadPDF = (msg) => {
 
     } else if (platform.isIOS) {
 
-        const getter = utils.ios.getter;
-        const NSURLSessionDownloadDelegateImpl = require("./ios/NSURLSessionDownloadDelegateImpl").NSURLSessionDownloadDelegateImpl;
+        var getter = utils.ios.getter;
+        var NSURLSessionDownloadDelegateImpl = require("./ios/NSURLSessionDownloadDelegateImpl").NSURLSessionDownloadDelegateImpl;
 
         try {
-            const queue = getter(NSOperationQueue, NSOperationQueue.mainQueue);
-            const downloadRequest = NSMutableURLRequest.requestWithURL(NSURL.URLWithString(link));
-            const delegate = NSURLSessionDownloadDelegateImpl.initWithPathProgressCompletion(path, function (progress) {
+            var queue = getter(NSOperationQueue, NSOperationQueue.mainQueue);
+            var downloadRequest = NSMutableURLRequest.requestWithURL(NSURL.URLWithString(link));
+            var delegate = NSURLSessionDownloadDelegateImpl.initWithPathProgressCompletion(path, function (progress) {
                 global.postMessage(progress);
             }, function (completed, filePath) {
                 if (completed) {
@@ -76,10 +76,10 @@ const downloadPDF = (msg) => {
                 }
             });
 
-            const sessionConfig = getter(NSURLSessionConfiguration, NSURLSessionConfiguration.defaultSessionConfiguration);
-            const application = getter(UIApplication, UIApplication.sharedApplication);
-            const urlSession = NSURLSession.sessionWithConfigurationDelegateDelegateQueue(sessionConfig, delegate, queue);
-            const downloadTask = urlSession.downloadTaskWithRequest(downloadRequest);
+            var sessionConfig = getter(NSURLSessionConfiguration, NSURLSessionConfiguration.defaultSessionConfiguration);
+            var application = getter(UIApplication, UIApplication.sharedApplication);
+            var urlSession = NSURLSession.sessionWithConfigurationDelegateDelegateQueue(sessionConfig, delegate, queue);
+            var downloadTask = urlSession.downloadTaskWithRequest(downloadRequest);
             downloadTask.resume();
             global.postMessage({
                 status: 1
@@ -92,6 +92,6 @@ const downloadPDF = (msg) => {
 
     }
 }
-onmessage = (msg) => {
+global.onmessage = function (msg) {
     downloadPDF(msg)
 }
