@@ -2,7 +2,7 @@ require("globals");
 var platform = require("platform");
 var fs = require("file-system");
 var utils = require("utils/utils");
-function downloadPDF() {
+function downloadPDF(msg) {
     var path = msg.data.path;
     var link = msg.data.link;
     if (platform.isAndroid) {

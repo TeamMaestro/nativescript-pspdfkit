@@ -1,6 +1,6 @@
 {
   "name": "nativescript-pspdfkit",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "Nativescript implementation of PSPDFKit.",
   "main": "pspdfkit",
   "nativescript": {
