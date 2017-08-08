@@ -107,9 +107,6 @@ global.onmessage = function (msg) {
             }
             global.close();
             break;
-        case 'download':
-            downloadPDF(msg);
-            break;
         default:
             downloadPDF(msg);
             break;
