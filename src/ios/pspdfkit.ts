@@ -109,8 +109,9 @@ export class TNSPSPDFView extends View {
     }
 
     public disposeNativeView() {
-        this.controller = null;
         this._worker.postMessage({ action: 'kill' });
+        this.controller = null;
+        super.disposeNativeView();
     }
 
     public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number) {
