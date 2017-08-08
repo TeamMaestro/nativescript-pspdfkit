@@ -2,6 +2,7 @@ require("globals");
 var platform = require("platform");
 var fs = require("file-system");
 var utils = require("utils/utils");
+var stream;
 function downloadPDF(msg) {
     var path = msg.data.path;
     var link = msg.data.link;
@@ -25,6 +26,7 @@ function downloadPDF(msg) {
             var times = 0;
             if (responseCode === 200) {
                 input = new java.io.BufferedInputStream(url.openStream());
+                stream = input;
                 output = new java.io.FileOutputStream(file);
 
                 global.postMessage({
@@ -80,6 +82,7 @@ function downloadPDF(msg) {
             var application = getter(UIApplication, UIApplication.sharedApplication);
             var urlSession = NSURLSession.sessionWithConfigurationDelegateDelegateQueue(sessionConfig, delegate, queue);
             var downloadTask = urlSession.downloadTaskWithRequest(downloadRequest);
+            stream = downloadTask;
             downloadTask.resume();
             global.postMessage({
                 status: 1
@@ -93,5 +96,22 @@ function downloadPDF(msg) {
     }
 }
 global.onmessage = function (msg) {
-    downloadPDF(msg)
+    switch (msg.data.action) {
+        case 'kill':
+            if (stream) {
+                if (platform.isAndroid) {
+                    stream.close();
+                } else {
+                    stream.cancel();
+                }
+            }
+            global.close();
+            break;
+        case 'download':
+            downloadPDF(msg);
+            break;
+        default:
+            downloadPDF(msg);
+            break;
+    }
 }
