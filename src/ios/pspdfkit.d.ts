@@ -13,6 +13,7 @@ export declare class TNSPSPDFView extends View {
     private _worker;
     private _cache;
     constructor();
+    static toggleMemoryMode(): void;
     createNativeView(): UIView;
     initNativeView(): void;
     disposeNativeView(): void;
@@ -24,6 +25,7 @@ export declare class TNSPSPDFView extends View {
     getAllFormFields(): Object;
     setFormField(name: string, value: any): void;
     setFormFields(obj: Object): void;
+    backgroundSaving: boolean;
     formsEnabled: boolean;
     scrollDirection: string;
     fitToWidth: boolean;

@@ -6,6 +6,7 @@ import { Guid, PageMode } from "../common";
 import { fromObject } from "tns-core-modules/data/observable";
 import * as types from 'utils/types';
 import { Color } from "tns-core-modules/color";
+import * as utils from 'tns-core-modules/utils/utils';
 export class TNSPSPDFKit {
 
     private appDelegate: any;
@@ -42,6 +43,15 @@ export class TNSPSPDFView extends View {
         super();
         this.controller = PSPDFViewController.new();
         this.backgroundColor = "#fff";
+    }
+
+    public static toggleMemoryMode() {
+        const instance = utils.ios.getter(PSPDFKit, PSPDFKit.sharedInstance);
+        if (instance.valueForKey('com.pspdfkit.low-memory-mode')) {
+            instance.setValueForKey(false, 'com.pspdfkit.low-memory-mode');
+        } else {
+            instance.setValueForKey(true, 'com.pspdfkit.low-memory-mode');
+        }
     }
     public createNativeView() {
         if (!this.controller) {
@@ -220,6 +230,11 @@ export class TNSPSPDFView extends View {
                     break;
                 }
             }
+        });
+    }
+    set backgroundSaving(enabled: boolean) {
+        this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+            config.allowBackgroundSaving = enabled;
         });
     }
     set formsEnabled(enabled: boolean) {
