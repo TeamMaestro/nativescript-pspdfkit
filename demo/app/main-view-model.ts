@@ -21,7 +21,16 @@ export class HelloWorldModel extends Observable {
 
         this.pspdfkit = new TNSPSPDFKit(this.licenseKey);
     }
-
+    destroyViewer() {
+        const pdf = frame.topmost().getViewById('pdf');
+        //pdf.parent._removeView(pdf);
+    }
+    firstViewer() {
+        frame.topmost().navigate('first');
+    }
+    secondViewer() {
+        frame.topmost().navigate('second');
+    }
     getName() {
         const pdf: any = frame.topmost().getViewById('pdf');
         dialogs.alert(pdf.getFormField('Given Name Text Box'));
