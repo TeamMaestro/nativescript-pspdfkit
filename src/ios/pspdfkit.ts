@@ -7,6 +7,7 @@ import { fromObject } from "tns-core-modules/data/observable";
 import * as types from 'utils/types';
 import { Color } from "tns-core-modules/color";
 import * as utils from 'tns-core-modules/utils/utils';
+export const PROGRESS_EVENT = 'progress';
 export class TNSPSPDFKit {
 
     private appDelegate: any;
@@ -32,12 +33,14 @@ const srcProperty = new Property<TNSPSPDFView, string>({
 });
 
 export class TNSPSPDFView extends View {
+    progress: number;
+    private _downloadTask: NSURLSessionDownloadTask;
     src: string;
     nativeView: UIView;
     controller: PSPDFViewController;
     config: PSPDFConfigurationBuilder;
+    private _progress = 0;
     private _file: any;
-    private _worker: Worker;
     private _cache: any = PSPDFDiskCacheStrategy.Everything;
     constructor() {
         super();
@@ -57,54 +60,12 @@ export class TNSPSPDFView extends View {
         if (!this.controller) {
             this.controller = PSPDFViewController.new();
         }
-        if (global.TNS_WEBPACK) {
-            let worker = require("worker-loader!../worker.js");
-            if (typeof worker === 'function') {
-                this._worker = worker();
-            } else {
-                this._worker = worker;
-            }
-        } else { this._worker = new Worker('../worker.js'); }
-        this._worker.onmessage = (msg) => {
-            if (msg.data.status === 1) {
-                this.notify({
-                    eventName: 'status',
-                    object: fromObject({ value: 'downloading' })
-                });
-            } else if (msg.data.status === 2 && msg.data.filePath) {
-                this.notify({
-                    eventName: 'status',
-                    object: fromObject({ value: 'completed' })
-                });
-                this._file = msg.data.filePath;
-                this.controller.document = getDocument(msg.data.filePath);
-                this.controller.document.diskCacheStrategy = this.cache;
-                this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-                let parent = topmost().ios.controller.visibleViewController;
-                parent.addChildViewController(this.controller);
-                this.controller.view.frame = this.nativeView.bounds;
-                this.nativeView.addSubview(this.controller.view);
-                this.controller.didMoveToParentViewController(parent);
-            }
-            if (msg.data.progress) {
-                this.notify({
-                    eventName: 'progress',
-                    object: fromObject({ value: msg.data.progress })
-                });
-            }
-        }
-        this._worker.onerror = (err) => {
-            this.notify({
-                eventName: 'status',
-                object: fromObject({ value: 'failed' })
-            });
-        }
         return UIView.new();
     }
     public initNativeView() {
         if (this.src) {
             if (this.src.startsWith('http://') || this.src.startsWith('https://')) {
-                downloadDocument(this.src, this._worker);
+                this.downloadDocument(this.src);
             } else {
                 this.controller.document = getDocument(this.src);
                 this.controller.document.diskCacheStrategy = this.cache;
@@ -118,12 +79,25 @@ export class TNSPSPDFView extends View {
         }
     }
 
+    public clearCache() {
+        if (this.controller && this.controller.document) {
+            this.controller.document.clearCache();
+        }
+    }
     public disposeNativeView() {
-        this._worker.postMessage({ action: 'kill' });
+        if (this._downloadTask) {
+            this._downloadTask.cancel();
+        }
+        this.controller.willMoveToParentViewController(null);
+        if (this.controller.view) {
+            this.controller.view.removeFromSuperview();
+        }
+        this.controller.removeFromParentViewController();
+        this._downloadTask = null;
         this.controller = null;
         super.disposeNativeView();
     }
-
+  
     public onMeasure(widthMeasureSpec: number, heightMeasureSpec: number) {
         const nativeView = this.nativeView;
         if (nativeView) {
@@ -161,7 +135,7 @@ export class TNSPSPDFView extends View {
 
     [srcProperty.setNative](src: string) {
         if (src.startsWith('http://') || src.startsWith('https://')) {
-            downloadDocument(src, this._worker);
+            this.downloadDocument(src);
         } else if (this.controller) {
             this.controller.document = getDocument(src);
             this.controller.document.diskCacheStrategy = this.cache;
@@ -217,7 +191,11 @@ export class TNSPSPDFView extends View {
 
         }
     }
-
+    set undoEnabled(enabled: boolean) {
+        if (this.controller && this.controller.document) {
+            this.controller.document.undoEnabled = enabled;
+        }
+    }
     setFormFields(obj: Object) {
         const arr = this.controller.document.formParser.formFields;
         const len = arr.count;
@@ -370,21 +348,67 @@ export class TNSPSPDFView extends View {
                 break;
         }
     }
+
+    downloadDocument(src: string) {
+        const url = NSString.stringWithString(src);
+        const parts = url.componentsSeparatedByString("/");
+        const filename = parts.lastObject;
+        const tempPath = fs.knownFolders.temp().path;
+        const fullPath = fs.path.join(tempPath, filename);
+        const configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
+        const manager = AFURLSessionManager.alloc().initWithSessionConfiguration(configuration);
+        const URL = NSURL.URLWithString(src)
+        const request = NSURLRequest.requestWithURL(URL);
+        this._downloadTask = manager.downloadTaskWithRequestProgressDestinationCompletionHandler(request, (progress) => {
+            if (this._downloadTask && this._downloadTask.state === NSURLSessionTaskState.Running) {
+                if (Math.floor(Math.round(progress.fractionCompleted * 100)) > this._progress) {
+                    this._progress = Math.floor(Math.round(progress.fractionCompleted * 100));
+                    this.notify({
+                        eventName: PROGRESS_EVENT,
+                        object: fromObject({
+                            value: Math.floor(Math.round(progress.fractionCompleted * 100))
+                        })
+                    })
+                };
+            }
+        }, (targetPath, response) => {
+            return NSURL.fileURLWithPath(fullPath);
+        }, (response, filePath, error) => {
+            if (error) {
+                this.notify({
+                    eventName: 'status',
+                    object: fromObject({ value: 'error', msg: error.localizedDescription, message: error.localizedDescription })
+                });
+            } else {
+                if (this._downloadTask && this._downloadTask.state === NSURLSessionTaskState.Completed && !this._downloadTask.error) {
+                    this.controller.document = getDocument(filePath.path);
+                    this.controller.document.diskCacheStrategy = this.cache;
+                    this.controller.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+                    let parent = topmost().ios.controller.visibleViewController;
+                    parent.addChildViewController(this.controller);
+                    this.controller.view.frame = this.nativeView.bounds;
+                    this.nativeView.addSubview(this.controller.view);
+                    this.controller.didMoveToParentViewController(parent);
+                    this.notify({
+                        eventName: 'status',
+                        object: fromObject({ value: 'completed' })
+                    });
+                }
+            }
+        })
+        this._downloadTask.resume();
+        this.notify({
+            eventName: 'status',
+            object: fromObject({ value: 'downloading' })
+        });
+    }
+
 }
 
 srcProperty.register(TNSPSPDFView);
 
-function downloadDocument(src: string, worker: Worker) {
-    const url = NSString.stringWithString(src);
-    const parts = url.componentsSeparatedByString("/");
-    const filename = parts.lastObject;
-    const tempPath = fs.knownFolders.temp().path;
-    const fullPath = fs.path.join(tempPath, filename);
-    worker.postMessage({
-        link: src,
-        path: fullPath
-    });
-}
+
+type DOWNLOAD_STATUS = 'downloading' | 'completed' | 'failed';
 
 function getDocument(src: string) {
     let fileUrl;
@@ -398,5 +422,3 @@ function getDocument(src: string) {
     document
     return document;
 }
-
-type DOWNLOAD_STATUS = 'downloading' | 'completed' | 'failed';

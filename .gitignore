@@ -9,4 +9,3 @@ demo/node_modules
 node_modules
 .idea
 .vscode
-!src/worker.js
