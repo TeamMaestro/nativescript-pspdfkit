@@ -33,7 +33,7 @@ registerElement("TNSPSPDFView", () => require("nativescript-pspdfkit").TNSPSPDFV
 ```
 
 ```html
-<pdfView:TNSPSPDFView scrollDirection="horizontal" scrubberBar="verticalRight" thumbnailBar="scrubber" spreadFitting="fill" src="~/example.pdf"/>
+<TNSPSPDFView scrollDirection="horizontal" scrubberBar="verticalRight" thumbnailBar="scrubber" spreadFitting="fill" src="~/example.pdf"></TNSPSPDFView>
 ```
 ## API
 
