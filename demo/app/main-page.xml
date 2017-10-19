@@ -1,8 +1,11 @@
-<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" xmlns:pdfView="nativescript-pspdfkit">
-<StackLayout>
-<Button text="Get Name" tap="{{getName}}"></Button>
-<Button text="Fill Form" tap="{{fillForm}}"></Button>
-<Button text="Clear Form" tap="{{clearForm}}"></Button>
-<Button text="First Viewer" tap="{{firstViewer}}"/>
-</StackLayout>
+<Page 
+    xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" 
+    xmlns:pdfView="nativescript-pspdfkit">
+    <StackLayout>
+        <Button text="Get Name" tap="{{getName}}"></Button>
+        <Button text="Fill Form" tap="{{fillForm}}"></Button>
+        <Button text="Clear Form" tap="{{clearForm}}"></Button>
+        <Button text="First Viewer" tap="{{firstViewer}}"/>
+         <Button text="Form Viewer" tap="{{formViewer}}"/>
+    </StackLayout>
 </Page>

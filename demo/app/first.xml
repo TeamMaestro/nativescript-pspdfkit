@@ -7,6 +7,6 @@
         <Button text="Clear Form" tap="{{clearForm}}"></Button>
         <Button text="Second Viewer" tap="{{secondViewer}}"/>
         <Button text="Destroy Viewer" tap="{{destroyViewer}}"/>
-        <pdfView:TNSPSPDFView cache="nothing" backgroundSaving="false" undoEnabled="false" pageMode="single" scrollDirection="vertical" formsEnabled="false" thumbnailBar="none" id="pdf" row="1" src="https://www.ets.org/Media/Tests/GRE/pdf/gre_research_validity_data.pdf"></pdfView:TNSPSPDFView>
+        <pdfView:TNSPSPDFView  backgroundSaving="false" undoEnabled="false" scrollDirection="vertical" formsEnabled="false"  id="pdf" row="1" src="https://www.ets.org/Media/Tests/GRE/pdf/gre_research_validity_data.pdf"></pdfView:TNSPSPDFView>
     </StackLayout>
 </Page>

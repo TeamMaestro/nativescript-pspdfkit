@@ -1,3 +1,0 @@
-platform :ios, '9.0'
-pod 'AFNetworking', '~> 3.0'
-pod 'PSPDFKit', podspec: 'https://customers.pspdfkit.com/cocoapods/TRIAL-FD5M47M8I9ZfPMqipkRPa8XJGS9R63NfJck-uKL8cYxw4t7VlXLkvxs2VHkTJJXgf5LhDGjNVhtg_h_9EcBX6g/latest.podspec'

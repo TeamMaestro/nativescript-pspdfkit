@@ -1,0 +1,12 @@
+<ActionBar [title]="title" class="action-bar"></ActionBar>
+<StackLayout>
+    <Button text="Get Name" (tap)="getName($event)"></Button>
+    <Button text="Fill Form" (tap)="fillForm($event)"></Button>
+    <Button text="Clear Form" (tap)="clearForm($event)"></Button>
+    <Button text="First Viewer" (tap)="firstViewer($event)"></Button>
+    <Button text="Second Viewer" (tap)="secondViewer($event)"></Button>
+    <Button text="Form Viewer" (tap)="formViewer($event)"></Button>
+    <Button text="Destroy Viewer" (tap)="destroyViewer($event)"></Button>
+    <Label [text]="src"></Label>
+    <TNSPSPDFView backgroundSaving="false" undoEnabled="false" scrollDirection="vertical" formsEnabled="false"  id="pdf" row="1" [src]="src"></TNSPSPDFView>
+</StackLayout>

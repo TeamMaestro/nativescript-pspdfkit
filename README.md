@@ -21,7 +21,7 @@ pspdfkit.display('~/example.pdf');
 IMPORTANT: Make sure you include xmlns:pspdfkit="nativescript-pspdfkit" on the Page tag
 
 ```xml
-<pdfView:TNSPSPDFView scrollDirection="horizontal" scrubberBar="verticalRight" thumbnailBar="scrubber" fitToWidth="true" src="~/example.pdf"/>
+<pdfView:TNSPSPDFView scrollDirection="horizontal" scrubberBar="verticalRight" thumbnailBar="scrubber" spreadFitting="fill" src="~/example.pdf"/>
 ```
 
 ### Angular
@@ -31,6 +31,10 @@ import { TNSPSPDFView } from 'nativescript-pspdfkit';
 import { registerElement } from "nativescript-angular/element-registry";
 registerElement("TNSPSPDFView", () => require("nativescript-pspdfkit").TNSPSPDFView);
 ```
+
+```html
+<pdfView:TNSPSPDFView scrollDirection="horizontal" scrubberBar="verticalRight" thumbnailBar="scrubber" spreadFitting="fill" src="~/example.pdf"/>
+```
 ## API
 
 | Property | Default | Type | Required | Description  |
@@ -38,9 +42,8 @@ registerElement("TNSPSPDFView", () => require("nativescript-pspdfkit").TNSPSPDFV
 | scrollDirection | vertical | string | <ul><li>- [ ] </li></ul> |
 | scrubberBar | horizontal | string  | <ul><li>- [ ] </li></ul> |
 | thumbnailBar | none | boolean | <ul><li>- [ ] </li></ul> | |
-| fitToWidth | false | string | <ul><li>- [ ] </li></ul> |
+| spreadFitting | "adaptive" | string | <ul><li>- [ ] </li></ul> |
 | thumbnailSize| Defaults to 88x125 on iPad and 53x75 on iPhone | string | <ul><li>- [ ] </li></ul> |
-| enableSmallDocumentsZoom | true | boolean | <ul><li>- [ ] </li></ul> |
 | pageMode| automatic | string | <ul><li>- [ ] </li></ul> |
 | minZoom | 1 | number | <ul><li>- [ ] </li></ul> |
 | maxZoom | 20 | number | <ul><li>- [ ] </li></ul> |
