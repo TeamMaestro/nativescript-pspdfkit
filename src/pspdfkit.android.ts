@@ -1,1 +1,1 @@
-export * from './src/android/pspdfkit';
+export * from './android/pspdfkit';

@@ -1,8 +1,8 @@
-import { Observable } from 'data/observable';
+import { Observable } from 'tns-core-modules/data/observable';
 import { TNSPSPDFKit } from 'nativescript-pspdfkit';
-import * as frame from 'ui/frame';
-import * as dialogs from 'ui/dialogs';
-var app = require('application');
+import * as frame from 'tns-core-modules/ui/frame';
+import * as dialogs from 'tns-core-modules/ui/dialogs';
+import * as app from 'tns-core-modules/application';
 
 export class HelloWorldModel extends Observable {
     public message: string;
@@ -21,9 +21,11 @@ export class HelloWorldModel extends Observable {
 
         this.pspdfkit = new TNSPSPDFKit(this.licenseKey);
     }
+    showFullScreen() {
+        this.pspdfkit.display("https://www.ets.org/Media/Tests/GRE/pdf/gre_research_validity_data.pdf");
+    }
     destroyViewer() {
         const pdf = frame.topmost().getViewById('pdf');
-        //pdf.parent._removeView(pdf);
     }
     firstViewer() {
         frame.topmost().navigate('first');
@@ -34,14 +36,19 @@ export class HelloWorldModel extends Observable {
     secondViewer() {
         frame.topmost().navigate('second');
     }
+
+    getAllFormFields() {
+        const pdf: any = frame.topmost().getViewById('pdf');
+        console.dir(pdf.getAllFormFields());
+    }
     getName() {
         const pdf: any = frame.topmost().getViewById('pdf');
-        dialogs.alert(pdf.getFormField('Given Name Text Box'));
+        dialogs.alert(pdf.getFormField('Given Name Text Box') || 'Nada');
     }
 
     fillForm() {
         const pdf: any = frame.topmost().getViewById('pdf');
-        pdf.setFormFields({ "Given Name Text Box": { "value": "Osei" }, "Family Name Text Box": { "value": "Fortune" }, "House nr Text Box": { "value": "3" }, "Address 2 Text Box": { "value": "" }, "Postcode Text Box": { "value": "000000" }, "Country Combo Box": { "value": "Trinidad & Tobago" }, "Height Formatted Field": { "value": "180" }, "City Text Box": { "value": "Siparia" }, "Driving License CheckBox": { "value": "Yes" }, "Favourite Colour List Box": { "value": "White" }, "Language 1 Check Box": { "value": "Yes" }, "Language 2 Check Box": { "value": "Yes" }, "Language 3 Check Box": { "value": "Yes" }, "Language 4 Check Box": { "value": "Yes" }, "Language 5 Check Box": { "value": "Yes" }, "Gender List Box": { "value": "Woman" }, "Address 1 Text Box": { "value": "Happy Hill Quinam Road" } });
+        pdf.setFormFields({ "Given Name Text Box": { "value": "Osei" }, "Family Name Text Box": { "value": "Fortune" }, "House nr Text Box": { "value": "3" }, "Address 2 Text Box": { "value": "" }, "Postcode Text Box": { "value": "000000" }, "Country Combo Box": { "value": "Trinidad & Tobago" }, "Height Formatted Field": { "value": "180" }, "City Text Box": { "value": "Siparia" }, "Driving License CheckBox": { "value": true }, "Favourite Colour List Box": { "value": "White" }, "Language 1 Check Box": { "value": true }, "Language 2 Check Box": { "value": true }, "Language 3 Check Box": { "value": true }, "Language 4 Check Box": { "value": true }, "Language 5 Check Box": { "value": true }, "Gender List Box": { "value": "Woman" }, "Address 1 Text Box": { "value": "Happy Hill Quinam Road" } });
     }
     clearForm() {
         const pdf: any = frame.topmost().getViewById('pdf');

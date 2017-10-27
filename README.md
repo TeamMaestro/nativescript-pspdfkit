@@ -11,6 +11,23 @@ Please note that this plugin is not production ready. You will have to fork this
 `npm install nativescript-pspdfkit`
 
 ## Example Implementation
+
+#Android 
+
+Modify the activity entry within the AndroidManifest.xml file found in the <application-name>app/App_Resources/Android/ folder
+
+```xml
+<activity
+        android:name="com.github.TeamMaestro.TNSFragmentActivity"
+        android:label="@string/title_activity_kimera"
+        android:configChanges="keyboardHidden|orientation|screenSize">
+
+        <activity android:name="com.pspdfkit.ui.PdfActivity" android:windowSoftInputMode="adjustNothing" />
+        <meta-data android:name="pspdfkit_license_key" android:value="youKey"/>
+```
+
+
+
 ```ts
 import {TNSPSPDFKit} from 'nativescript-pspdfkit';
 let licenseKey = '';
@@ -35,6 +52,10 @@ registerElement("TNSPSPDFView", () => require("nativescript-pspdfkit").TNSPSPDFV
 ```html
 <TNSPSPDFView scrollDirection="horizontal" scrubberBar="verticalRight" thumbnailBar="scrubber" spreadFitting="fill" src="~/example.pdf"></TNSPSPDFView>
 ```
+
+*Webpack*
+Setup worker loader -> [link](https://github.com/NativeScript/worker-loader)
+
 ## API
 
 | Property | Default | Type | Required | Description  |
@@ -52,4 +73,6 @@ registerElement("TNSPSPDFView", () => require("nativescript-pspdfkit").TNSPSPDFV
 | src | null | string | <ul><li>- [x] </li></ul> |
 
 ## Example Image
-![Image](http://i.imgur.com/FM1ZxuV.png)
+| IOS | Android|
+| --- | ---|
+|![IOS](http://i.imgur.com/FM1ZxuV.png) | ![Android](https://i.imgur.com/lNkzbCr.png)|

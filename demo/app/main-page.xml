@@ -6,6 +6,7 @@
         <Button text="Fill Form" tap="{{fillForm}}"></Button>
         <Button text="Clear Form" tap="{{clearForm}}"></Button>
         <Button text="First Viewer" tap="{{firstViewer}}"/>
-         <Button text="Form Viewer" tap="{{formViewer}}"/>
+        <Button text="Form Viewer" tap="{{formViewer}}"/>
+        <Button text="FullScreen Viewer" tap="{{showFullScreen}}"/>
     </StackLayout>
 </Page>

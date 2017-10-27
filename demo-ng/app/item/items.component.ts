@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 
 import { TNSPSPDFKit } from 'nativescript-pspdfkit';
-import * as dialogs from 'ui/dialogs';
+import * as dialogs from 'tns-core-modules/ui/dialogs';
 import { Page } from "tns-core-modules/ui/page";
 import { RouterExtensions } from "nativescript-angular/router";
 var app = require('application');
@@ -28,7 +28,6 @@ export class ItemsComponent {
 
     destroyViewer() {
         const pdf = this.page.getViewById('pdf');
-        //pdf.parent._removeView(pdf);
     }
     firstViewer(event) {
         console.log('nav')

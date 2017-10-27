@@ -1,10 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
 import { TNSPSPDFKit } from 'nativescript-pspdfkit';
-import * as dialogs from 'ui/dialogs';
+import * as dialogs from 'tns-core-modules/ui/dialogs';
 import { Page } from "tns-core-modules/ui/page";
 import { RouterExtensions } from "nativescript-angular/router";
 import { ActivatedRoute } from "@angular/router";
-var app = require('application');
+import * as app from 'tns-core-modules/application';
 @Component({
     selector: "ns-details",
     moduleId: module.id,
@@ -28,7 +28,7 @@ export class ItemDetailComponent {
 
     ngOnInit() {
         this.route.params.subscribe(params => {
-            this.setSource(parseInt(params['id'],10));
+            this.setSource(parseInt(params['id'], 10));
         })
     }
 
@@ -55,7 +55,6 @@ export class ItemDetailComponent {
     }
     destroyViewer() {
         const pdf = this.page.getViewById('pdf');
-        //pdf.parent._removeView(pdf);
     }
     firstViewer(event) {
         this.router.navigate(['/item', 1]);

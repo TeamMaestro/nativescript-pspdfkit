@@ -4,24 +4,27 @@ android {
             dimension "nativescript-pspdfkit"
         }
     }
-    defaultConfig {
-        buildConfigField 'String', 'PSPDFKIT_LICENSE_KEY', "\"d04Z1gawu-vIGgDOI59iXoJ8_cAj5YIzybrgDFcxelVd5Xa95tPE38TeUdE3Y0PjYUrtUc2lv71sSJdtQt7xsf4o-aTXpUDjpyK-HYrSDJ7kb-NoX5xYAL9I_Dcg2IrA2FiMDWc-pS7530C4uOyHzV06UlFYvfC4j35_C3r1j-VjRyKm5nLxEvyk7O26voFFoDQ9MdCDVnc7yAsmr1VT4Pk4Xn4usHuj0QKTm4lIURu_OurwljbaZaGNG4rr3b9rxXTLbxBbHsznqB2NfIY3xdpxEXiWtykacX7-voQikzfzIdWUPogwNywPIYvTwCZNaY6n2Hv2Fn5jLhT5iljHhxVGz9XAFbS2ro8bwE6tgoWYKPAVLbJI04qWSz18Wm7s-rqua7f0D2-WnnosdHSGV58IvI1bFEZgA7UDZqmF7cLlfz0ax1ZcP0wC-cTCHpKX\""
-    }
 }
 
-allprojects {
-    repositories {
-        maven {
-            url 'https://customers.pspdfkit.com/maven/'
+repositories {
+    jcenter()
+    maven {
+        url 'https://customers.pspdfkit.com/maven/'
 
-            credentials {
-                username 'pspdfkit'
-                password 'G9FZqtPLhtK92QeYbcdQGBQNK8agNZsuANKQnbYycBoIYT_7jQEWPuJlInCa98OsxpmF6mBrHHk43f5m_Y1Glw'
-            }
+        credentials {
+            username 'pspdfkit'
+            password 'TRIAL-WX3wkOPNiDwcXW_whG2v_ZqrQgBjQxs7NMIzMLUp1_HBH3viP0t_AxopK-DXqOLIyYheRA26A07YpJHN0XOH_Q'
         }
     }
+    maven {
+            url "https://maven.google.com"
+        }
 }
 
 dependencies {
-    compile 'com.pspdfkit:pspdfkit-demo:2.4.2'
+    compile 'com.android.support:cardview-v7:26.0.2'
+    compile 'com.android.support:design:26.0.2'
+    compile 'com.android.support:support-v4:26.0.2'
+    compile 'com.android.support:appcompat-v7:26.0.2'
+    compile 'com.pspdfkit:pspdfkit-demo:4.0.0'
 }
