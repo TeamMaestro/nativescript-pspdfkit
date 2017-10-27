@@ -3,6 +3,7 @@
     xmlns:pdfView="nativescript-pspdfkit">
     <StackLayout>
         <Button text="Get Name" tap="{{getName}}"></Button>
+        <Button text="Get All" tap="{{getAllFormFields}}"/>
         <Button text="Fill Form" tap="{{fillForm}}"></Button>
         <Button text="Clear Form" tap="{{clearForm}}"></Button>
         <Button text="First Viewer" tap="{{firstViewer}}"/>

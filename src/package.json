@@ -21,6 +21,7 @@
         "plugin.tscwatch": "npm run tsc -- -w",
         "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
         "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
+        "demo.debug.android": "npm i && npm run tsc && cd ../demo && tns debug android --syncAllFiles",
         "demo.reset": "cd ../demo && rimraf platforms",
         "demong.ios": "npm i && npm run tsc && cd ../demo-ng && tns run ios --syncAllFiles",
         "demong.android": "npm i && npm run tsc && cd ../demo-ng && tns run android --syncAllFiles",

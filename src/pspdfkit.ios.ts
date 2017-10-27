@@ -1,1 +1,1 @@
-export * from './src/ios/pspdfkit';
+export * from './ios/pspdfkit';

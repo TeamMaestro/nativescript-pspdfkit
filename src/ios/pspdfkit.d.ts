@@ -1,17 +1,21 @@
-import { View } from 'tns-core-modules/ui/core/view';
+import * as common from '../common';
+import { Observable } from 'tns-core-modules/data/observable';
 export declare const PROGRESS_EVENT = "progress";
 export declare class TNSPSPDFKit {
+    _downloadTask: any;
+    private _progress;
     private appDelegate;
+    events: Observable;
     constructor(licenseKey: string);
     display(documentName: string): void;
+    private downloadDocument(src);
 }
-export declare class TNSPSPDFView extends View {
+export declare class TNSPSPDFView extends common.TNSPSPDFView {
     progress: number;
     private _downloadTask;
-    src: string;
     nativeView: UIView;
-    controller: PSPDFViewController;
-    config: PSPDFConfigurationBuilder;
+    controller: any;
+    config: any;
     private _progress;
     private _file;
     constructor();

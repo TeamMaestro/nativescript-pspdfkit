@@ -1,44 +1,109 @@
 import { topmost } from 'tns-core-modules/ui/frame';
-import { ContentView } from 'tns-core-modules/ui/content-view';
 import { View, Property, layout } from 'tns-core-modules/ui/core/view';
-import * as fs from 'tns-core-modules/file-system'
-import { Guid, PageMode } from '../common';
-import { fromObject } from 'tns-core-modules/data/observable';
+import * as fs from 'tns-core-modules/file-system';
+import * as common from '../common';
+import { fromObject, Observable } from 'tns-core-modules/data/observable';
+import * as utils from 'tns-core-modules/utils/utils';
 import * as types from 'tns-core-modules/utils/types';
 import { Color } from 'tns-core-modules/color';
-import * as utils from 'tns-core-modules/utils/utils';
+import { PageMode } from '../common';
 export const PROGRESS_EVENT = 'progress';
+declare const PSPDFKit,
+    PSPDFViewController,
+    PSPDFScrollDirection,
+    PSPDFConfigurationBuilder,
+    PSPDFConfigurationSpreadFitting,
+    AFURLSessionManager,
+    PSPDFThumbnailBarMode,
+    PSPDFScrubberBarType,
+    PSPDFPageMode,
+    PSPDFDocument;
 export class TNSPSPDFKit {
-
+    _downloadTask: any;
+    private _progress: number;
     private appDelegate: any;
-
+    events: Observable;
     /**
      * Creates an instance of TNSPSPDFKit.
      *
      * @param {string} licenseKey The license key
      */
     constructor(licenseKey: string) {
+        this.events = fromObject({});
         PSPDFKit.setLicenseKey(licenseKey);
     }
 
     display(documentName: string) {
         let controller = PSPDFViewController.new();
-        controller.document = getDocument(documentName);
-        let navCtrl = (<UINavigationController>topmost().ios.controller).initWithRootViewController(controller);
+        if (types.isString(documentName) && documentName.startsWith('~')) {
+            controller.document = getDocument(documentName);
+            topmost().ios.controller.initWithRootViewController(controller);
+        } else if (types.isString(documentName) && documentName.startsWith('/')) {
+            controller.document = getDocument(documentName);
+            topmost().ios.controller.initWithRootViewController(controller);
+        } else if (types.isString(documentName) && documentName.startsWith('http://') || documentName.startsWith('https://')) {
+            this.downloadDocument(documentName);
+        }
+
+    }
+    private downloadDocument(src) {
+        const url = NSString.stringWithString(src);
+        const parts = url.componentsSeparatedByString("/");
+        const filename = parts.lastObject;
+        const tempPath = fs.knownFolders.temp().path;
+        const fullPath = fs.path.join(tempPath, filename);
+        const configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
+        const manager = AFURLSessionManager.alloc().initWithSessionConfiguration(configuration);
+        const URL = NSURL.URLWithString(src);
+        const request = NSURLRequest.requestWithURL(URL);
+        this._downloadTask = manager.downloadTaskWithRequestProgressDestinationCompletionHandler(request, (progress) => {
+            if (this._downloadTask && this._downloadTask.state === NSURLSessionTaskState.Running) {
+                if (Math.floor(Math.round(progress.fractionCompleted * 100)) > this._progress) {
+                    this._progress = Math.floor(Math.round(progress.fractionCompleted * 100));
+                    this.events.notify({
+                        eventName: PROGRESS_EVENT,
+                        object: fromObject({
+                            value: Math.floor(Math.round(progress.fractionCompleted * 100))
+                        })
+                    });
+                }
+            }
+        }, (targetPath, response) => {
+            return NSURL.fileURLWithPath(fullPath);
+        }, (response, filePath, error) => {
+            if (error) {
+                this.events.notify({
+                    eventName: 'status',
+                    object: fromObject({ value: 'error', msg: error.localizedDescription, message: error.localizedDescription })
+                });
+            } else {
+                if (this._downloadTask && this._downloadTask.state === NSURLSessionTaskState.Completed && !this._downloadTask.error) {
+                    let controller = PSPDFViewController.new();
+                    controller.document = getDocument(filePath.path);
+                    topmost().ios.controller.initWithRootViewController(controller);
+                    this.events.notify({
+                        eventName: 'status',
+                        object: fromObject({ value: 'completed' })
+                    });
+                }
+            }
+        });
+        this._downloadTask.resume();
+        this.events.notify({
+            eventName: 'status',
+            object: fromObject({ value: 'downloading' })
+        });
     }
 }
 
-const srcProperty = new Property<TNSPSPDFView, string>({
-    name: 'src'
-});
 
-export class TNSPSPDFView extends View {
+
+export class TNSPSPDFView extends common.TNSPSPDFView {
     progress: number;
     private _downloadTask: NSURLSessionDownloadTask;
-    src: string;
     nativeView: UIView;
-    controller: PSPDFViewController;
-    config: PSPDFConfigurationBuilder;
+    controller: any;
+    config: any;
     private _progress = 0;
     private _file: any;
     constructor() {
@@ -108,10 +173,10 @@ export class TNSPSPDFView extends View {
     set backgroundColor(value: string) {
         this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
             config.backgroundColor = new Color(value).ios;
-        })
+        });
     }
 
-    [srcProperty.setNative](src: string) {
+    [common.srcProperty.setNative](src: string) {
         if (src.startsWith('http://') || src.startsWith('https://')) {
             this.downloadDocument(src);
         } else if (this.controller) {
@@ -144,7 +209,7 @@ export class TNSPSPDFView extends View {
     }
 
     getAllFormFields(): Object {
-        const array = this.controller.document.formParser.formFields
+        const array = this.controller.document.formParser.formFields;
         let obj = {};
         const len = array.count;
         for (let i = 0; i < len; i++) {
@@ -156,12 +221,23 @@ export class TNSPSPDFView extends View {
 
     setFormField(name: string, value: any) {
         if (name && value) {
-            const array = this.controller.document.formParser.formFields
+            const array = this.controller.document.formParser.formFields;
             const len = array.count;
             for (let i = 0; i < len; i++) {
                 const item = array.objectAtIndex(i);
                 if (item.fullyQualifiedName === name) {
-                    item.value = value;
+                    if (types.isBoolean(value)) {
+                        switch (value) {
+                            case true:
+                                item.value = "YES";
+                                break;
+                            default:
+                                item.value = "NO";
+                                break;
+                        }
+                    } else {
+                        item.value = value;
+                    }
                     break;
                 }
             }
@@ -181,7 +257,18 @@ export class TNSPSPDFView extends View {
             for (let i = 0; i < len; i++) {
                 const field = arr.objectAtIndex(i);
                 if (field.fullyQualifiedName === key) {
-                    field.value = item['value'];
+                    if (types.isBoolean(item['value'])) {
+                        switch (item['value']) {
+                            case true:
+                                field.value = "YES";
+                                break;
+                            default:
+                                field.value = "NO";
+                                break;
+                        }
+                    } else {
+                        field.value = item['value'];
+                    }
                     break;
                 }
             }
@@ -218,22 +305,22 @@ export class TNSPSPDFView extends View {
         }
     }
 
-    set spreadFitting(fit:string) {
+    set spreadFitting(fit: string) {
         switch (fit) {
             case "fit":
-            this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
-                config.spreadFitting = PSPDFConfigurationSpreadFitting.Fit;
-            });
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.spreadFitting = PSPDFConfigurationSpreadFitting.Fit;
+                });
                 break;
             case "fill":
-            this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
-                config.spreadFitting = PSPDFConfigurationSpreadFitting.Fill;
-            });
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.spreadFitting = PSPDFConfigurationSpreadFitting.Fill;
+                });
                 break;
             default:
-            this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
-                config.spreadFitting = PSPDFConfigurationSpreadFitting.Adaptive;
-            });
+                this.controller.updateConfigurationWithoutReloadingWithBuilder((config) => {
+                    config.spreadFitting = PSPDFConfigurationSpreadFitting.Adaptive;
+                });
                 break;
 
         }
@@ -340,7 +427,7 @@ export class TNSPSPDFView extends View {
         const fullPath = fs.path.join(tempPath, filename);
         const configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
         const manager = AFURLSessionManager.alloc().initWithSessionConfiguration(configuration);
-        const URL = NSURL.URLWithString(src)
+        const URL = NSURL.URLWithString(src);
         const request = NSURLRequest.requestWithURL(URL);
         this._downloadTask = manager.downloadTaskWithRequestProgressDestinationCompletionHandler(request, (progress) => {
             if (this._downloadTask && this._downloadTask.state === NSURLSessionTaskState.Running) {
@@ -351,8 +438,8 @@ export class TNSPSPDFView extends View {
                         object: fromObject({
                             value: Math.floor(Math.round(progress.fractionCompleted * 100))
                         })
-                    })
-                };
+                    });
+                }
             }
         }, (targetPath, response) => {
             return NSURL.fileURLWithPath(fullPath);
@@ -377,7 +464,7 @@ export class TNSPSPDFView extends View {
                     });
                 }
             }
-        })
+        });
         this._downloadTask.resume();
         this.notify({
             eventName: 'status',
@@ -387,10 +474,6 @@ export class TNSPSPDFView extends View {
 
 }
 
-srcProperty.register(TNSPSPDFView);
-
-
-type DOWNLOAD_STATUS = 'downloading' | 'completed' | 'failed';
 
 function getDocument(src: string) {
     let fileUrl;
