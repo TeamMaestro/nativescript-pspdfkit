@@ -26,7 +26,12 @@ Modify the activity entry within the AndroidManifest.xml file found in the <appl
         <meta-data android:name="pspdfkit_license_key" android:value="youKey"/>
 ```
 
+Modify the defaultConfig entry within the app.gradle file found in the <application-name>app/App_Resources/Android/ folder
 
+```
+defaultConfig {  
+    minSdkVersion 19
+```
 
 ```ts
 import {TNSPSPDFKit} from 'nativescript-pspdfkit';
