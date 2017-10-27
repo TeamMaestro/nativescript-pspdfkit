@@ -12,7 +12,7 @@ Please note that this plugin is not production ready. You will have to fork this
 
 ## Example Implementation
 
-#Android 
+# Android 
 
 Modify the activity entry within the AndroidManifest.xml file found in the <application-name>app/App_Resources/Android/ folder
 
