@@ -420,15 +420,13 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
             file = new java.io.File(documentName);
         }
         uri = android.net.Uri.fromFile(file);
+        const manager = app.android.foregroundActivity.getSupportFragmentManager();
         this._fragment = com.pspdfkit.ui.PdfFragment.newInstance(uri, this.config.build());
-        let page = frame.topmost().currentPage;
-        let f = page.frame;
-        this._pageFragment = f.android.fragmentForPage(page);
-        if (this._pageFragment) {
-            let fragmentManager = this._pageFragment.getActivity().getSupportFragmentManager();
-            let transaction = fragmentManager.beginTransaction();
-            transaction.replace(this._layoutId, <any>this._fragment, FRAGMENT_TAG);
-            transaction.commit();
+        if (manager) {
+            manager
+            .beginTransaction()
+            .replace(this._layoutId, <any>this._fragment, FRAGMENT_TAG)
+            .commit();
         }
     }
 
