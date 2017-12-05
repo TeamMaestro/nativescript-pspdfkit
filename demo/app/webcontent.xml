@@ -1,0 +1,11 @@
+<Page
+    xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
+    xmlns:pdfView="nativescript-pspdfkit">
+    <StackLayout>
+        <Button text="Destroy Viewer" tap="{{destroyViewer}}"/>
+        <Button text="Load Web Content" tap="{{loadWebContent}}"/>
+        <Button text="Load Html Content" tap="{{loadHtmlString}}"/>
+        <Label text="{{webcontent}}" />
+        <pdfView:TNSPSPDFView backgroundSaving="false" undoEnabled="false" pageMode="single" scrollDirection="vertical" formsEnabled="false" thumbnailBar="none" id="pdf" row="1" src="{{webcontent}}"></pdfView:TNSPSPDFView>
+    </StackLayout>
+</Page>

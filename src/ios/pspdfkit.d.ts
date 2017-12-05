@@ -7,10 +7,12 @@ export declare class TNSPSPDFKit {
     private appDelegate;
     events: Observable;
     constructor(licenseKey: string);
+    convert(src: string, outPut?: string): Promise<any>;
     display(documentName: string): void;
     private downloadDocument(src);
 }
 export declare class TNSPSPDFView extends common.TNSPSPDFView {
+    _isSetup: boolean;
     progress: number;
     private _downloadTask;
     nativeView: UIView;
@@ -20,9 +22,9 @@ export declare class TNSPSPDFView extends common.TNSPSPDFView {
     private _file;
     constructor();
     static toggleMemoryMode(): void;
-    createNativeView(): UIView;
     initNativeView(): void;
     clearCache(): void;
+    private setupView();
     disposeNativeView(): void;
     onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void;
     backgroundColor: string;

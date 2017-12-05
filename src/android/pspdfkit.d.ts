@@ -7,6 +7,7 @@ export declare class TNSPSPDFKit {
     private config;
     constructor(licenseKey: string);
     private initWorker();
+    convert(src: string, outPut?: string): Promise<any>;
     display(documentName: string): void;
     private downloadDocument(src);
 }

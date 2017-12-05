@@ -1,5 +1,5 @@
-<Page 
-    xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" 
+<Page
+    xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
     xmlns:pdfView="nativescript-pspdfkit">
     <StackLayout>
         <Button text="Get Name" tap="{{getName}}"></Button>
@@ -7,6 +7,7 @@
         <Button text="Clear Form" tap="{{clearForm}}"></Button>
         <Button text="First Viewer" tap="{{firstViewer}}"/>
         <Button text="Form Viewer" tap="{{formViewer}}"/>
+        <Button text="Web Content Viewer" tap="{{webContentViewer}}"/>
         <Button text="FullScreen Viewer" tap="{{showFullScreen}}"/>
     </StackLayout>
 </Page>
