@@ -39,13 +39,20 @@ export class TNSPSPDFKit {
         fs.knownFolders.documents().path,
         +new Date() + '.pdf'
       )}`;
+    } else {
+      if (outPut.startsWith('/')) {
+        outPut = `file://${outPut}`;
+      }
+      if (outPut.startsWith('file:')) {
+        outPut = encodeURI(outPut);
+      }
     }
 
     if (src.startsWith('~/')) {
       src = 'file://' + src.replace('~', '');
     }
 
-    if (src.startsWith('file:///')) {
+    if (src.startsWith('file:')) {
       src = encodeURI(src);
     }
 
@@ -93,13 +100,13 @@ export class TNSPSPDFKit {
       topmost().ios.controller.initWithRootViewController(controller);
     } else if (
       types.isString(documentName) &&
-      documentName.startsWith('file://')
+      documentName.startsWith('file:')
     ) {
       controller.document = getDocument(documentName);
       topmost().ios.controller.initWithRootViewController(controller);
     } else if (
-      (types.isString(documentName) && documentName.startsWith('http://')) ||
-      documentName.startsWith('https://')
+      types.isString(documentName) &&
+      documentName.startsWith('http')
     ) {
       this.downloadDocument(documentName);
     }

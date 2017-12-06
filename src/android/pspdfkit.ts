@@ -476,7 +476,7 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
       file = new java.io.File(documentName);
     } else if (
       types.isString(documentName) &&
-      documentName.startsWith('file://')
+      documentName.startsWith('file:')
     ) {
       file = new java.io.File(documentName);
     }
@@ -495,7 +495,7 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
   }
 
   [common.srcProperty.setNative](src: string) {
-    if (src.startsWith('http://') || src.startsWith('https://')) {
+    if (src.startsWith('http')) {
       this.downloadDocument(src);
     } else {
       this.init(src);
