@@ -8,6 +8,7 @@ import * as types from 'tns-core-modules/utils/types';
 import { Color } from 'tns-core-modules/color';
 import { PageMode } from '../common';
 export const PROGRESS_EVENT = 'progress';
+const main_queue = dispatch_get_current_queue();
 declare const PSPDFKit,
   PSPDFViewController,
   PSPDFScrollDirection,
@@ -126,25 +127,29 @@ export class TNSPSPDFKit {
     this._downloadTask = manager.downloadTaskWithRequestProgressDestinationCompletionHandler(
       request,
       progress => {
-        if (
-          this._downloadTask &&
-          this._downloadTask.state === NSURLSessionTaskState.Running
-        ) {
+        dispatch_async(main_queue, () => {
           if (
-            Math.floor(Math.round(progress.fractionCompleted * 100)) >
-            this._progress
+            this._downloadTask &&
+            this._downloadTask.state === NSURLSessionTaskState.Running
           ) {
-            this._progress = Math.floor(
-              Math.round(progress.fractionCompleted * 100)
-            );
-            this.events.notify({
-              eventName: PROGRESS_EVENT,
-              object: fromObject({
-                value: Math.floor(Math.round(progress.fractionCompleted * 100))
-              })
-            });
+            if (
+              Math.floor(Math.round(progress.fractionCompleted * 100)) >
+              this._progress
+            ) {
+              this._progress = Math.floor(
+                Math.round(progress.fractionCompleted * 100)
+              );
+              this.events.notify({
+                eventName: PROGRESS_EVENT,
+                object: fromObject({
+                  value: Math.floor(
+                    Math.round(progress.fractionCompleted * 100)
+                  )
+                })
+              });
+            }
           }
-        }
+        });
       },
       (targetPath, response) => {
         return NSURL.fileURLWithPath(fullPath);
