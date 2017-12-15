@@ -562,25 +562,27 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     this._downloadTask = manager.downloadTaskWithRequestProgressDestinationCompletionHandler(
       request,
       progress => {
-        if (
-          this._downloadTask &&
-          this._downloadTask.state === NSURLSessionTaskState.Running
-        ) {
+        dispatch_async(main_queue, () => {
           if (
-            Math.floor(Math.round(progress.fractionCompleted * 100)) >
-            this._progress
+            this._downloadTask &&
+            this._downloadTask.state === NSURLSessionTaskState.Running
           ) {
-            this._progress = Math.floor(
-              Math.round(progress.fractionCompleted * 100)
-            );
-            this.notify({
-              eventName: PROGRESS_EVENT,
-              object: fromObject({
-                value: Math.floor(Math.round(progress.fractionCompleted * 100))
-              })
-            });
+            if (
+              Math.floor(Math.round(progress.fractionCompleted * 100)) >
+              this._progress
+            ) {
+              this._progress = Math.floor(
+                Math.round(progress.fractionCompleted * 100)
+              );
+              this.notify({
+                eventName: PROGRESS_EVENT,
+                object: fromObject({
+                  value: Math.floor(Math.round(progress.fractionCompleted * 100))
+                })
+              });
+            }
           }
-        }
+        });
       },
       (targetPath, response) => {
         return NSURL.fileURLWithPath(fullPath);
