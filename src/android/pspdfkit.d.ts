@@ -1,5 +1,6 @@
 import { Observable } from 'tns-core-modules/data/observable';
 import * as common from '../common';
+export { PageMode, documentTitleProperty } from '../common';
 export declare class TNSPSPDFKit {
     private worker;
     private context;
@@ -25,6 +26,7 @@ export declare class TNSPSPDFView extends common.TNSPSPDFView {
     private _fragment;
     private _layoutId;
     private worker;
+    private _initialLoad;
     static toggleMemoryMode(): void;
     clearCache(): void;
     createNativeView(): android.widget.LinearLayout;
@@ -43,5 +45,7 @@ export declare class TNSPSPDFView extends common.TNSPSPDFView {
     initNativeView(): void;
     formsEnabled: boolean;
     private init(documentName);
+    onLoaded(): void;
+    onUnloaded(): void;
     private downloadDocument(src);
 }

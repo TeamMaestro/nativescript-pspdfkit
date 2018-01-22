@@ -13,7 +13,7 @@ export class HelloWorldModel extends Observable {
 
     if (app.ios) {
       this.licenseKey =
-        'DFhJq8E9e15vLqvkK2S6gi10H6NwbE2SlYy4NhPyAzCd00KVSriFJQtXcht0YPkra0kauUyxZnjnDRgSyWM0K2XYYQjsGAOr/7VhrqezJxSsOEuJa/tKJvaFaIgnZeSwiFusuBJ6eQf2mWy9i+Xm/46RXu5Wih7UVD0zNavh4X2rFyECwhNWijkRiS5/ttgHzckjd8rqe56Ps/qGVIgb2IcgB/aULETas/u1gzHXtqwHN+1BNu8Y3wpuGyvYl1AsKHY6bS4Qmjkk/Fsk6mIgfJTiaYnPCi4aFz+4NuN3vAHxjyH7MTBBysZi7D3MZdwgvn8edPl9LBvZDhYk3g00BeKuVrUdToZqx4aZx7K260xMY9xAoP0QgY8I3KcxgDhm6trM2QC9HivCBZ/Fn43WV3MSZ5we+aZWOo7APgYmJmLdt4FD+HHvL5DqnMrDrvrU';
+        'a7oJI3uKwUb+ZgK/XZ5PgfH3CeecSQRAlqqH77nTcSWmJqkLv18ZNj/A7oQ896RN8beR0SXCzLfVqHunaOXU3tJAmt4K1coWZc6bz2W6avv1baZwLFa4ZrLneskzeRpcwdMVToVl/P+70U+B8eG9iWJn/oEXPMRtmmSGTF1Q8xUtoyJAOlqvxbGeUqOXm6AJl2nlUadW4aRQYOBy0UyRu3y2CrgUNLURAQcD+1kt+oVVYFR11kp6q2/nchWOzCaF/GnjaA7aRL7q13KY51LXaepS4kwU6sVwCwP8mV9kXWLi+kRXWfcsQ6/3wXPw8OzzWsKEkDzBYfQW2/GHwWHoNqT5Jgrj+D1w8qW9wlowcxTJh+cLg7P1hGMJEdVWIjpB6WxgBSLKXUGItXvyxJ/mRpgfnM8JpFbizXVF4Es3J/KcwTkws4I2kilYx6RwLCAn';
     }
     if (app.android) {
       this.licenseKey =
@@ -53,25 +53,27 @@ export class HelloWorldModel extends Observable {
 
   fillForm() {
     const pdf: any = frame.topmost().getViewById('pdf');
-    pdf.setFormFields({
-      'Given Name Text Box': { value: 'Osei' },
-      'Family Name Text Box': { value: 'Fortune' },
-      'House nr Text Box': { value: '3' },
-      'Address 2 Text Box': { value: '' },
-      'Postcode Text Box': { value: '000000' },
-      'Country Combo Box': { value: 'Trinidad & Tobago' },
-      'Height Formatted Field': { value: '180' },
-      'City Text Box': { value: 'Siparia' },
-      'Driving License CheckBox': { value: true },
-      'Favourite Colour List Box': { value: 'White' },
-      'Language 1 Check Box': { value: true },
-      'Language 2 Check Box': { value: true },
-      'Language 3 Check Box': { value: true },
-      'Language 4 Check Box': { value: true },
-      'Language 5 Check Box': { value: true },
-      'Gender List Box': { value: 'Woman' },
-      'Address 1 Text Box': { value: 'Happy Hill Quinam Road' }
-    });
+    if (pdf) {
+      pdf.setFormFields({
+        'Given Name Text Box': { value: 'Osei' },
+        'Family Name Text Box': { value: 'Fortune' },
+        'House nr Text Box': { value: '3' },
+        'Address 2 Text Box': { value: '' },
+        'Postcode Text Box': { value: '000000' },
+        'Country Combo Box': { value: 'Trinidad & Tobago' },
+        'Height Formatted Field': { value: '180' },
+        'City Text Box': { value: 'Siparia' },
+        'Driving License CheckBox': { value: true },
+        'Favourite Colour List Box': { value: 'White' },
+        'Language 1 Check Box': { value: true },
+        'Language 2 Check Box': { value: true },
+        'Language 3 Check Box': { value: true },
+        'Language 4 Check Box': { value: true },
+        'Language 5 Check Box': { value: true },
+        'Gender List Box': { value: 'Woman' },
+        'Address 1 Text Box': { value: 'Happy Hill Quinam Road' }
+      });
+    }
   }
   clearForm() {
     const pdf: any = frame.topmost().getViewById('pdf');

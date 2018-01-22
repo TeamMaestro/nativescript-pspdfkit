@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest 
+<manifest
 	xmlns:android="http://schemas.android.com/apk/res/android" package="__PACKAGE__" android:versionCode="1" android:versionName="1.0">
 	<supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true"/>
 	<uses-sdk android:minSdkVersion="17" android:targetSdkVersion="__APILEVEL__"/>
@@ -16,6 +16,6 @@
 		</activity>
 		<activity android:name="com.pspdfkit.ui.PdfActivity" android:windowSoftInputMode="adjustNothing" />
 		<activity android:name="com.tns.ErrorReportActivity"/>
-		<meta-data android:name="pspdfkit_license_key" android:value="eXEH5KwDi2ihAgvfeM5_QFxec-cmHoBehn6lzUNBpzFy4Gld0FGyFkEW3lobf24HZRsDMzmgp0WsAnW5o_TrRYdPZelrecr8-8MblS7S42y2MquODmMJERMZ_pmi61VZLpvnppui7qkxZqNClMzVBSkPSDs3MEXqoHCQwzpVfPVhJbOtregTdO7aJelxV_M7LMGgNDHKbIG5YJKzcN8MD4zvTFffirMdDq-cTubpV3tarduJGV44w6gcFNrMTcpXtJfHj32EYMoZ0LBLOzeJy9QtMIwo-lzGV-mlSNHewatCLWf9HfxQajUd_VgMNHtaCCD88ysCpIV8-75yykV_xyDg6VZwZj__LWpBp5Wt8G7j8UrNMn-GkR2N8nwJ7T6Q_4qyfn6b1IciTIYoZYp6iR6sHgpC6VNIn1qXHn_n7-o9nJV5GmaSpHvKpZcWIvCY"/>
+		<meta-data android:name="pspdfkit_license_key" android:value="D19I4q_ZYFOD8g8zzAGpOJ-ar8cxfOmoF_NETT-ord9uvsGKgdYfEjTZqV3Js3hBc_I9If8amsXkpMs_PLwNK4LhcbhVnSCPWPpGOGpkrgP0gJ5SdsBLV13gGAXC1TAdX78U08eF7w56UYs4CMHq3zEppE4pornKjN7m57AFD0li6WErk7leYRgiY9EZPlrrRk9qLF2hr5YjdZYJxzv8R02WhkasmYQJ3AZRRbVNBlMusiEE7r_lqatEet2wX22zRy4KD9XUBQO9bzDD4bv2WsEXQ3p3LVVxtK0Ad3afVvkdgktwvSoJWgAGXe_BTBu6lQc1djlvfJSerTOl-KIWGdJNLtklKyYXjmws2l1iY6Hw-rANRwcW7LTpsJOY1vW_C6a5S3l6VPLzUdYT0bc2rKST7ujqHbo-fjeIRczCvldBLGHa4Keh2517nxn_aSL6"/>"/>
 	</application>
 </manifest>

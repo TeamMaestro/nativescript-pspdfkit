@@ -13,7 +13,7 @@ repositories {
 
         credentials {
             username 'pspdfkit'
-            password 'TRIAL-rd-McSTjPIvKSXfo79sFke8Z032oxfd9E8Cx4XbPY6G0ZhTZJ15Dq0gL0Idkw8zbYyKsNmgrQHesoWgchACSCw'
+            password 'TRIAL-Vb3Y7-D2q6LBv__py93SJhKHlZ4pUcQmLfFb1ojBgO5FAAdPf3CUVQW9yyyiT2P8jut9wik2bANR-sx_71Fkfg'
         }
     }
     maven {

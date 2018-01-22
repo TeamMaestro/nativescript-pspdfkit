@@ -7,7 +7,8 @@ import { Observable, fromObject } from 'tns-core-modules/data/observable';
 import * as frame from 'tns-core-modules/ui/frame';
 import { Color } from 'tns-core-modules/color/color';
 import * as common from '../common';
-import { PageMode } from '../common';
+import { PageMode, documentTitleProperty } from '../common';
+export { PageMode, documentTitleProperty } from '../common';
 declare var com: any;
 const PSPDFKit = com.pspdfkit.PSPDFKit;
 const PSPDFDocument = com.pspdfkit.document.PSPDFDocument;
@@ -144,6 +145,7 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
   private _fragment: any;
   private _layoutId: number;
   private worker: Worker;
+  private _initialLoad: boolean;
   public static toggleMemoryMode() {}
   public clearCache() {}
   public createNativeView() {
@@ -234,6 +236,19 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     };
     this._layoutId = android.view.View.generateViewId();
     return new android.widget.LinearLayout(this._context);
+  }
+
+  [documentTitleProperty.setNative](title: string) {
+    const doc = this._fragment ? this._fragment.getDocument() : null;
+    if (types.isString(title) && doc) {
+      const meta = doc.getMetadata();
+      if (meta) {
+        meta.set(
+          com.pspdfkit.document.DocumentMetadata.PDF_METADATA_TITLE,
+          title
+        );
+      }
+    }
   }
 
   getAnnotationField(name: string) {
@@ -501,7 +516,26 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
       this.init(src);
     }
   }
-
+  public onLoaded() {
+    super.onLoaded();
+    if (this._initialLoad && this._fragment && this._fragment.isDetached()) {
+      const manager = app.android.foregroundActivity.getSupportFragmentManager() as android.support.v4.app.FragmentManager;
+      manager
+        .beginTransaction()
+        .attach(this._fragment)
+        .commit();
+    }
+    this._initialLoad = true;
+  }
+  public onUnloaded() {
+    if (this._initialLoad && this._fragment && !this._fragment.isDetached()) {
+      const manager = app.android.foregroundActivity.getSupportFragmentManager() as android.support.v4.app.FragmentManager;
+      manager
+        .beginTransaction()
+        .detach(this._fragment)
+        .commit();
+    }
+  }
   private downloadDocument(src) {
     const tempPath = fs.path.join(
       fs.knownFolders.temp().path,

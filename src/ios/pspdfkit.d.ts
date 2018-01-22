@@ -1,5 +1,6 @@
 import * as common from '../common';
 import { Observable } from 'tns-core-modules/data/observable';
+export { PageMode, documentTitleProperty } from '../common';
 export declare const PROGRESS_EVENT = "progress";
 export declare class TNSPSPDFKit {
     _downloadTask: any;
@@ -15,7 +16,7 @@ export declare class TNSPSPDFView extends common.TNSPSPDFView {
     _isSetup: boolean;
     progress: number;
     private _downloadTask;
-    nativeView: UIView;
+    nativeView: any;
     controller: any;
     config: any;
     private _progress;

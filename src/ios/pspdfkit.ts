@@ -6,7 +6,8 @@ import { fromObject, Observable } from 'tns-core-modules/data/observable';
 import * as utils from 'tns-core-modules/utils/utils';
 import * as types from 'tns-core-modules/utils/types';
 import { Color } from 'tns-core-modules/color';
-import { PageMode } from '../common';
+import { PageMode, documentTitleProperty } from '../common';
+export { PageMode, documentTitleProperty } from '../common';
 export const PROGRESS_EVENT = 'progress';
 const main_queue = dispatch_get_current_queue();
 declare const PSPDFKit,
@@ -18,7 +19,8 @@ declare const PSPDFKit,
   PSPDFThumbnailBarMode,
   PSPDFScrubberBarType,
   PSPDFPageMode,
-  PSPDFDocument;
+  PSPDFDocument,
+  PSPDFProcessor;
 export class TNSPSPDFKit {
   _downloadTask: any;
   private _progress: number;
@@ -193,7 +195,7 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
   _isSetup: boolean;
   progress: number;
   private _downloadTask: NSURLSessionDownloadTask;
-  nativeView: UIView;
+  nativeView: any;
   controller: any;
   config: any;
   private _progress = 0;
@@ -203,6 +205,12 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     this.controller = PSPDFViewController.new();
     this.nativeView = this.nativeViewProtected = UIView.new();
     this.backgroundColor = '#fff';
+  }
+
+  [documentTitleProperty.setNative](title: string) {
+    if (types.isString(title) && this.controller && this.controller.document) {
+      this.controller.document.title = title;
+    }
   }
 
   public static toggleMemoryMode() {
@@ -276,6 +284,13 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
       this.downloadDocument(src);
     } else if (this.controller) {
       this.controller.document = getDocument(src);
+      if (
+        types.isString(this.documentTitle) &&
+        this.controller &&
+        this.controller.document
+      ) {
+        this.controller.document.title = this.documentTitle;
+      }
       this.setupView();
     }
   }
@@ -577,7 +592,9 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
               this.notify({
                 eventName: PROGRESS_EVENT,
                 object: fromObject({
-                  value: Math.floor(Math.round(progress.fractionCompleted * 100))
+                  value: Math.floor(
+                    Math.round(progress.fractionCompleted * 100)
+                  )
                 })
               });
             }
@@ -604,6 +621,13 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
             !this._downloadTask.error
           ) {
             this.controller.document = getDocument(filePath.path);
+            if (
+              types.isString(this.documentTitle) &&
+              this.controller &&
+              this.controller.document
+            ) {
+              this.controller.document.title = this.documentTitle;
+            }
             this.setupView();
             this.notify({
               eventName: 'status',
