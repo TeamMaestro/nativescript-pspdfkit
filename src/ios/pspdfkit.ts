@@ -195,7 +195,7 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
   _isSetup: boolean;
   progress: number;
   private _downloadTask: NSURLSessionDownloadTask;
-  nativeView: any;
+  nativeView: UIView;
   controller: any;
   config: any;
   private _progress = 0;
@@ -504,13 +504,16 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     if (sizes.length === 2) {
       this.controller.updateConfigurationWithoutReloadingWithBuilder(config => {
         config.thumbnailSize = CGSizeMake(
-          parseInt(sizes[0]),
-          parseInt(sizes[1])
+          parseInt(sizes[0], 10),
+          parseInt(sizes[1], 10)
         );
       });
     } else {
       this.controller.updateConfigurationWithoutReloadingWithBuilder(config => {
-        config.thumbnailSize = CGSizeMake(parseInt(size), parseInt(size));
+        config.thumbnailSize = CGSizeMake(
+          parseInt(size, 10),
+          parseInt(size, 10)
+        );
       });
     }
   }
@@ -622,17 +625,24 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
           ) {
             this.controller.document = getDocument(filePath.path);
             if (
-              types.isString(this.documentTitle) &&
-              this.controller &&
-              this.controller.document
+              this._downloadTask &&
+              this._downloadTask.state === NSURLSessionTaskState.Completed &&
+              !this._downloadTask.error
             ) {
-              this.controller.document.title = this.documentTitle;
+              this.controller.document = getDocument(filePath.path);
+              if (
+                types.isString(this.documentTitle) &&
+                this.controller &&
+                this.controller.document
+              ) {
+                this.controller.document.title = this.documentTitle;
+              }
+              this.setupView();
+              this.notify({
+                eventName: 'status',
+                object: fromObject({ value: 'completed' })
+              });
             }
-            this.setupView();
-            this.notify({
-              eventName: 'status',
-              object: fromObject({ value: 'completed' })
-            });
           }
         }
       }
