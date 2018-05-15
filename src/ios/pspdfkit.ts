@@ -195,7 +195,7 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
   _isSetup: boolean;
   progress: number;
   private _downloadTask: NSURLSessionDownloadTask;
-  nativeView: UIView;
+  nativeView: any;
   controller: any;
   config: any;
   private _progress = 0;
@@ -292,6 +292,18 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
         this.controller.document.title = this.documentTitle;
       }
       this.setupView();
+    }
+  }
+
+  getPageIndex(): number {
+    if (this.controller) {
+      return this.controller.pageIndex;
+    }
+    return 0;
+  }
+  setPageIndex(index: number, animated: boolean) {
+    if (this.controller) {
+      this.controller.setPageIndexAnimated(index, !!animated);
     }
   }
 

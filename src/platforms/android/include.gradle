@@ -1,11 +1,3 @@
-android {
-    productFlavors {
-        "nativescript-pspdfkit" {
-            dimension "nativescript-pspdfkit"
-        }
-    }
-}
-
 repositories {
     jcenter()
     maven {

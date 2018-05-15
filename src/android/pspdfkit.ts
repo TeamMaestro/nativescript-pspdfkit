@@ -251,6 +251,19 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     }
   }
 
+  getPageIndex(): number {
+    if (this._fragment) {
+      return this._fragment.getPageIndex();
+    }
+    return 0;
+  }
+
+  setPageIndex(index: number, animated: boolean) {
+    if (this._fragment) {
+      this._fragment.setPageIndex(index, !!animated);
+    }
+  }
+
   getAnnotationField(name: string) {
     // TODO
     return;
@@ -529,7 +542,15 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
   }
   public onUnloaded() {
     if (this._initialLoad && this._fragment && !this._fragment.isDetached()) {
-      const manager = app.android.foregroundActivity.getSupportFragmentManager() as android.support.v4.app.FragmentManager;
+      const manager =
+        app.android &&
+        app.android.foregroundActivity &&
+        typeof app.android.foregroundActivity.getSupportFragmentManager() ===
+          'function'
+          ? app.android.foregroundActivity.getSupportFragmentManager()
+          : null;
+
+      if (!manager) return;
       manager
         .beginTransaction()
         .detach(this._fragment)
