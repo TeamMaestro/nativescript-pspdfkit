@@ -8,12 +8,13 @@ export class HelloWorldModel extends Observable {
   public message: string;
   private pspdfkit: TNSPSPDFKit;
   private licenseKey: string;
+  selectedIndex: number = 0;
   constructor() {
     super();
 
     if (app.ios) {
       this.licenseKey =
-        'a7oJI3uKwUb+ZgK/XZ5PgfH3CeecSQRAlqqH77nTcSWmJqkLv18ZNj/A7oQ896RN8beR0SXCzLfVqHunaOXU3tJAmt4K1coWZc6bz2W6avv1baZwLFa4ZrLneskzeRpcwdMVToVl/P+70U+B8eG9iWJn/oEXPMRtmmSGTF1Q8xUtoyJAOlqvxbGeUqOXm6AJl2nlUadW4aRQYOBy0UyRu3y2CrgUNLURAQcD+1kt+oVVYFR11kp6q2/nchWOzCaF/GnjaA7aRL7q13KY51LXaepS4kwU6sVwCwP8mV9kXWLi+kRXWfcsQ6/3wXPw8OzzWsKEkDzBYfQW2/GHwWHoNqT5Jgrj+D1w8qW9wlowcxTJh+cLg7P1hGMJEdVWIjpB6WxgBSLKXUGItXvyxJ/mRpgfnM8JpFbizXVF4Es3J/KcwTkws4I2kilYx6RwLCAn';
+        'lWADJTw/qh+L4wMOibqKrg3UM/9VVbcFHbMAE8sX0uQtl5gMo9je6VLG77Dd+NQQgpgSubFsVKjMb93jGvl6aLwxFm4CUQiJe7AAI3UjyZJmltxAbezy0sqKbw80wNPeM83Div1YyJmiWYopMdLhODPJcstr1PVyERSw7iosQLF7iXJ98iQNZbK0DEGmbXIdOmeCVeNubOjEkxtZfeqSET5p3CpA0txIrFwr0OAjUcKBan3vZI4KcQaiAtwbcRKxEiTfhCy/jve+QdouoAIO/cduUQwrw2GwplosadI+zWF9PKMsUYSbojeieS2evmeSy4zQCmRqrsHP/m3bJxBdyqUMWqaFCidqf+NzHNdnyh9PnZn/qNAaRdOYLWkK7FaFqF1rXg57Ajq7UYt0UA2OGGpZGVPqh5kkZQ5nteHHlqnmDj5nsXSC4GvM8sv+ONwH';
     }
     if (app.android) {
       this.licenseKey =

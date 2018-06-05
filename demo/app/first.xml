@@ -8,6 +8,7 @@
         <Button text="Form Viewer" tap="{{formViewer}}"/>
         <Button text="Second Viewer" tap="{{secondViewer}}"/>
         <Button text="Destroy Viewer" tap="{{destroyViewer}}"/>
+        <Label text="{{ 'Selected Index ' + selectedIndex}}"/>
         <pdfView:TNSPSPDFView  backgroundSaving="false" undoEnabled="false" scrollDirection="vertical" formsEnabled="false" id="pdf" row="1" src="https://www.ets.org/Media/Tests/GRE/pdf/gre_research_validity_data.pdf"></pdfView:TNSPSPDFView>
     </StackLayout>
 </Page>
