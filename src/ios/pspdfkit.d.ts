@@ -29,6 +29,8 @@ export declare class TNSPSPDFView extends common.TNSPSPDFView {
     disposeNativeView(): void;
     onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void;
     backgroundColor: string;
+    getPageIndex(): number;
+    setPageIndex(index: number, animated: boolean): void;
     getAnnotationField(name: string): any;
     getFormField(name: string): any;
     getAllFormFields(): Object;

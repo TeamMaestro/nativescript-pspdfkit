@@ -30,6 +30,8 @@ export declare class TNSPSPDFView extends common.TNSPSPDFView {
     static toggleMemoryMode(): void;
     clearCache(): void;
     createNativeView(): android.widget.LinearLayout;
+    getPageIndex(): number;
+    setPageIndex(index: number, animated: boolean): void;
     getAnnotationField(name: string): void;
     getFormField(name: string): any;
     getAllFormFields(): Object;
@@ -43,6 +45,7 @@ export declare class TNSPSPDFView extends common.TNSPSPDFView {
     pageMode: any;
     backgroundColor: string;
     initNativeView(): void;
+    disposeNativeView(): void;
     formsEnabled: boolean;
     private init(documentName);
     onLoaded(): void;

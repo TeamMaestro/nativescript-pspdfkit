@@ -480,9 +480,26 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     this._backgroundColor = value;
   }
   public initNativeView() {
+    if (this._fragment) {
+      const ref = new WeakRef(this);
+      const listener = new com.pspdfkit.listeners.DocumentListener({
+        onPageUpdated(document, pageIndex: number) {},
+        onPageChanged(document, pageIndex: number) {
+          const owner = ref.get();
+          owner.selectedIndex = pageIndex;
+        },
+        onDocumentLoaded(document) {},
+        onDocumentZoomed(document, ageIndex, scaleFactor) {}
+      });
+      this._fragment.addDocumentListener(listener);
+    }
+
     this.nativeView.setId(this._layoutId);
   }
 
+  public disposeNativeView() {
+    super.disposeNativeView();
+  }
   set formsEnabled(enabled: boolean) {
     this._formsEnabled = enabled;
   }
@@ -514,6 +531,21 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
       uri,
       this.config.build()
     );
+
+    if (this._fragment) {
+      const ref = new WeakRef(this);
+      const listener = new com.pspdfkit.listeners.DocumentListener({
+        onPageUpdated(document, pageIndex: number) {},
+        onPageChanged(document, pageIndex: number) {
+          const owner = ref.get();
+          owner.selectedIndex = pageIndex;
+        },
+        onDocumentLoaded(document) {},
+        onDocumentZoomed(document, ageIndex, scaleFactor) {}
+      });
+      this._fragment.addDocumentListener(listener);
+    }
+
     if (manager) {
       manager
         .beginTransaction()
@@ -541,6 +573,7 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     this._initialLoad = true;
   }
   public onUnloaded() {
+    super.onUnloaded();
     if (this._initialLoad && this._fragment && !this._fragment.isDetached()) {
       const manager =
         app.android &&

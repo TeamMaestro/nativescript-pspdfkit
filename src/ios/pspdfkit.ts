@@ -20,7 +20,9 @@ declare const PSPDFKit,
   PSPDFScrubberBarType,
   PSPDFPageMode,
   PSPDFDocument,
-  PSPDFProcessor;
+  PSPDFProcessor,
+  PSPDFDocumentViewControllerDelegate,
+  PSPDFDocumentViewControllerSpreadIndexDidChangeNotification;
 export class TNSPSPDFKit {
   _downloadTask: any;
   private _progress: number;
@@ -202,6 +204,24 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
   private _file: any;
   constructor() {
     super();
+    const center = utils.ios.getter(
+      NSNotificationCenter,
+      NSNotificationCenter.defaultCenter
+    );
+    const queue = utils.ios.getter(
+      NSOperationQueue,
+      NSOperationQueue.mainQueue
+    );
+    const ref = new WeakRef(this);
+    center.addObserverForNameObjectQueueUsingBlock(
+      PSPDFDocumentViewControllerSpreadIndexDidChangeNotification,
+      null,
+      queue,
+      notification => {
+        const owner = ref.get();
+        owner.selectedIndex = notification.object.spreadIndex;
+      }
+    );
     this.controller = PSPDFViewController.new();
     this.nativeView = this.nativeViewProtected = UIView.new();
     this.backgroundColor = '#fff';
@@ -261,6 +281,17 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     this.controller.removeFromParentViewController();
     this._downloadTask = null;
     this.controller = null;
+    const center = utils.ios.getter(
+      NSNotificationCenter,
+      NSNotificationCenter.defaultCenter
+    );
+    const queue = utils.ios.getter(
+      NSOperationQueue,
+      NSOperationQueue.mainQueue
+    );
+    center.removeObserver(
+      PSPDFDocumentViewControllerSpreadIndexDidChangeNotification
+    );
     super.disposeNativeView();
   }
 

@@ -39,11 +39,18 @@ export const srcProperty = new Property<TNSPSPDFView, string>({
 export const documentTitleProperty = new Property<TNSPSPDFView, string>({
   name: 'documentTitle'
 });
+
+export const selectedIndexProperty = new Property<TNSPSPDFView, number>({
+  name: 'selectedIndex',
+  defaultValue: 0
+});
 export class TNSPSPDFView extends View {
   src: string;
   progress: number;
   documentTitle: string;
+  selectedIndex: number;
 }
 
 srcProperty.register(TNSPSPDFView);
 documentTitleProperty.register(TNSPSPDFView);
+selectedIndexProperty.register(TNSPSPDFView);
