@@ -1,6 +1,17 @@
 import { Observable } from 'tns-core-modules/data/observable';
 import * as common from '../common';
 export { PageMode, documentTitleProperty } from '../common';
+export interface TNSPSPDFKitOptions {
+    scrollDirection?: 'vertical' | 'horizontal';
+    backgroundColor?: string;
+    spreadFitting?: 'adaptive' | 'fit' | 'fill';
+    thumbnailBar?: 'scrollable' | 'none' | 'scrubber';
+    scrubberBar?: 'verticalRight' | 'verticalLeft';
+    thumbnailSize?: string;
+    pageMode?: 'automatic' | 'single' | 'double';
+    minZoom?: number;
+    maxZoom?: number;
+}
 export declare class TNSPSPDFKit {
     private worker;
     private context;
@@ -9,7 +20,7 @@ export declare class TNSPSPDFKit {
     constructor(licenseKey: string);
     private initWorker();
     convert(src: string, outPut?: string): Promise<any>;
-    display(documentName: string): void;
+    display(documentName: string, options?: TNSPSPDFKitOptions): void;
     private downloadDocument(src);
 }
 export declare class TNSPSPDFView extends common.TNSPSPDFView {
@@ -21,6 +32,8 @@ export declare class TNSPSPDFView extends common.TNSPSPDFView {
     _pageMode: any;
     _backgroundColor: string;
     _formsEnabled: boolean;
+    _spreadFitting: any;
+    _thumbnailBar: any;
     config: any;
     private _pageFragment;
     private _fragment;
@@ -30,6 +43,7 @@ export declare class TNSPSPDFView extends common.TNSPSPDFView {
     static toggleMemoryMode(): void;
     clearCache(): void;
     createNativeView(): android.widget.LinearLayout;
+    spreadFitting: string;
     getPageIndex(): number;
     setPageIndex(index: number, animated: boolean): void;
     getAnnotationField(name: string): void;

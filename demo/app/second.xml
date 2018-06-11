@@ -1,8 +1,13 @@
-<Page 
-    xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" 
+<Page
+    xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
     xmlns:pdfView="nativescript-pspdfkit">
-    <StackLayout>
+    <Page.actionBar>
+      <ActionBar title="Second"/>
+  </Page.actionBar>
+    <GridLayout>
+        <Label text="{{ 'Selected Index ' + selectedIndex}}"/>
+        <Button text="Go Back" tap="goBack"/>
         <Button text="Destroy Viewer" tap="{{destroyViewer}}"/>
         <pdfView:TNSPSPDFView backgroundSaving="false" undoEnabled="false" pageMode="single" scrollDirection="vertical" formsEnabled="false" thumbnailBar="none" id="pdf" row="1" src="~/example.pdf"></pdfView:TNSPSPDFView>
-    </StackLayout>
+    </GridLayout>
 </Page>

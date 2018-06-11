@@ -1,5 +1,5 @@
 import { topmost } from 'tns-core-modules/ui/frame';
-import { View, Property, layout } from 'tns-core-modules/ui/core/view';
+import { layout } from 'tns-core-modules/ui/core/view';
 import * as fs from 'tns-core-modules/file-system';
 import * as common from '../common';
 import { fromObject, Observable } from 'tns-core-modules/data/observable';
@@ -23,6 +23,18 @@ declare const PSPDFKit,
   PSPDFProcessor,
   PSPDFDocumentViewControllerDelegate,
   PSPDFDocumentViewControllerSpreadIndexDidChangeNotification;
+
+export interface TNSPSPDFKitOptions {
+  scrollDirection?: 'vertical' | 'horizontal';
+  backgroundColor?: string;
+  spreadFitting?: 'adaptive' | 'fit' | 'fill';
+  thumbnailBar?: 'scrollable' | 'scrubber' | 'none';
+  scrubberBar?: 'verticalRight' | 'verticalLeft';
+  thumbnailSize?: string;
+  pageMode?: 'automatic' | 'single' | 'double';
+  minZoom?: number;
+  maxZoom?: number;
+}
 export class TNSPSPDFKit {
   _downloadTask: any;
   private _progress: number;
@@ -95,8 +107,108 @@ export class TNSPSPDFKit {
     });
   }
 
-  display(documentName: string) {
+  display(documentName: string, options: TNSPSPDFKitOptions = {}) {
     let controller = PSPDFViewController.new();
+
+    if (options.backgroundColor) {
+      controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+        config.backgroundColor = new Color(options.backgroundColor).ios;
+      });
+    }
+    switch (options.scrollDirection) {
+      case 'horizontal':
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.scrollDirection = PSPDFScrollDirection.Horizontal;
+        });
+        break;
+      default:
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.scrollDirection = PSPDFScrollDirection.Vertical;
+        });
+        break;
+    }
+
+    switch (options.spreadFitting) {
+      case 'fit':
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.spreadFitting = PSPDFConfigurationSpreadFitting.Fit;
+        });
+        break;
+      case 'fill':
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.spreadFitting = PSPDFConfigurationSpreadFitting.Fill;
+        });
+        break;
+      default:
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.spreadFitting = PSPDFConfigurationSpreadFitting.Adaptive;
+        });
+        break;
+    }
+
+    switch (options.thumbnailBar) {
+      case 'scrollable':
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.thumbnailBarMode = PSPDFThumbnailBarMode.Scrollable;
+        });
+        break;
+      case 'scrubber':
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.thumbnailBarMode = PSPDFThumbnailBarMode.ScrubberBar;
+        });
+        break;
+      case 'none':
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.thumbnailBarMode = PSPDFThumbnailBarMode.None;
+        });
+        break;
+    }
+
+    switch (options.scrubberBar) {
+      case 'verticalRight':
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.scrubberBarType = PSPDFScrubberBarType.VerticalRight;
+        });
+        break;
+      case 'verticalLeft':
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.scrubberBarType = PSPDFScrubberBarType.VerticalLeft;
+        });
+        break;
+      default:
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.scrubberBarType = PSPDFScrubberBarType.Horizontal;
+        });
+        break;
+    }
+
+    if (options.thumbnailSize) {
+      let sizes = options.thumbnailSize.split(' ');
+      if (sizes.length === 2) {
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.thumbnailSize = CGSizeMake(
+            parseInt(sizes[0], 10),
+            parseInt(sizes[1], 10)
+          );
+        });
+      } else {
+        controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+          config.thumbnailSize = CGSizeMake(
+            parseInt(options.thumbnailSize, 10),
+            parseInt(options.thumbnailSize, 10)
+          );
+        });
+      }
+    }
+
+    controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+      config.maximumZoomScale = options.maxZoom;
+    });
+
+    controller.updateConfigurationWithoutReloadingWithBuilder(config => {
+      config.minimumZoomScale = options.minZoom;
+    });
+
     if (types.isString(documentName) && documentName.startsWith('~')) {
       controller.document = getDocument(documentName);
       topmost().ios.controller.initWithRootViewController(controller);
@@ -199,29 +311,13 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
   private _downloadTask: NSURLSessionDownloadTask;
   nativeView: any;
   controller: any;
+  currentSize: CGSize = CGSizeZero;
   config: any;
   private _progress = 0;
   private _file: any;
+  private _observer;
   constructor() {
     super();
-    const center = utils.ios.getter(
-      NSNotificationCenter,
-      NSNotificationCenter.defaultCenter
-    );
-    const queue = utils.ios.getter(
-      NSOperationQueue,
-      NSOperationQueue.mainQueue
-    );
-    const ref = new WeakRef(this);
-    center.addObserverForNameObjectQueueUsingBlock(
-      PSPDFDocumentViewControllerSpreadIndexDidChangeNotification,
-      null,
-      queue,
-      notification => {
-        const owner = ref.get();
-        owner.selectedIndex = notification.object.spreadIndex;
-      }
-    );
     this.controller = PSPDFViewController.new();
     this.nativeView = this.nativeViewProtected = UIView.new();
     this.backgroundColor = '#fff';
@@ -232,7 +328,40 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
       this.controller.document.title = title;
     }
   }
-
+  private addObserver() {
+    if (this._observer) {
+      this.removeObserver();
+    }
+    const center = utils.ios.getter(
+      NSNotificationCenter,
+      NSNotificationCenter.defaultCenter
+    );
+    const queue = utils.ios.getter(
+      NSOperationQueue,
+      NSOperationQueue.mainQueue
+    );
+    const ref = new WeakRef(this);
+    this._observer = center.addObserverForNameObjectQueueUsingBlock(
+      PSPDFDocumentViewControllerSpreadIndexDidChangeNotification,
+      null,
+      queue,
+      notification => {
+        const owner = ref.get();
+        if (owner != null) {
+          owner.selectedIndex = notification.object.spreadIndex;
+        }
+      }
+    );
+  }
+  private removeObserver() {
+    if (this._observer) {
+      const center = utils.ios.getter(
+        NSNotificationCenter,
+        NSNotificationCenter.defaultCenter
+      );
+      center.removeObserver(this._observer);
+    }
+  }
   public static toggleMemoryMode() {
     const instance = utils.ios.getter(PSPDFKit, PSPDFKit.sharedInstance);
     if (instance.valueForKey('com.pspdfkit.low-memory-mode')) {
@@ -259,17 +388,23 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     }
   }
   private setupView() {
+    this.removeObserver();
+    this.addObserver();
     if (!this._isSetup) {
       this._isSetup = true;
-      this.controller.view.autoresizingMask =
-        UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-      let parent = topmost().ios.controller.visibleViewController;
-      parent.addChildViewController(this.controller);
-      this.controller.view.frame = this.nativeView.bounds;
-      this.nativeView.addSubview(this.controller.view);
-      this.controller.didMoveToParentViewController(parent);
     }
   }
+
+  public onLoaded() {
+    super.onLoaded();
+    this.addObserver();
+  }
+
+  public onUnloaded() {
+    this.removeObserver();
+    super.onUnloaded();
+  }
+
   public disposeNativeView() {
     if (this._downloadTask) {
       this._downloadTask.cancel();
@@ -281,17 +416,6 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     this.controller.removeFromParentViewController();
     this._downloadTask = null;
     this.controller = null;
-    const center = utils.ios.getter(
-      NSNotificationCenter,
-      NSNotificationCenter.defaultCenter
-    );
-    const queue = utils.ios.getter(
-      NSOperationQueue,
-      NSOperationQueue.mainQueue
-    );
-    center.removeObserver(
-      PSPDFDocumentViewControllerSpreadIndexDidChangeNotification
-    );
     super.disposeNativeView();
   }
 
@@ -668,24 +792,17 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
           ) {
             this.controller.document = getDocument(filePath.path);
             if (
-              this._downloadTask &&
-              this._downloadTask.state === NSURLSessionTaskState.Completed &&
-              !this._downloadTask.error
+              types.isString(this.documentTitle) &&
+              this.controller &&
+              this.controller.document
             ) {
-              this.controller.document = getDocument(filePath.path);
-              if (
-                types.isString(this.documentTitle) &&
-                this.controller &&
-                this.controller.document
-              ) {
-                this.controller.document.title = this.documentTitle;
-              }
-              this.setupView();
-              this.notify({
-                eventName: 'status',
-                object: fromObject({ value: 'completed' })
-              });
+              this.controller.document.title = this.documentTitle;
             }
+            this.setupView();
+            this.notify({
+              eventName: 'status',
+              object: fromObject({ value: 'completed' })
+            });
           }
         }
       }

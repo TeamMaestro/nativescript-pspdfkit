@@ -1,6 +1,9 @@
 <Page
     xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded"
     xmlns:pdfView="nativescript-pspdfkit">
+    <Page.actionBar>
+      <ActionBar title="Main"/>
+  </Page.actionBar>
     <StackLayout>
         <Button text="Get Name" tap="{{getName}}"></Button>
         <Button text="Fill Form" tap="{{fillForm}}"></Button>

@@ -2,6 +2,17 @@ import * as common from '../common';
 import { Observable } from 'tns-core-modules/data/observable';
 export { PageMode, documentTitleProperty } from '../common';
 export declare const PROGRESS_EVENT = "progress";
+export interface TNSPSPDFKitOptions {
+    scrollDirection?: 'vertical' | 'horizontal';
+    backgroundColor?: string;
+    spreadFitting?: 'adaptive' | 'fit' | 'fill';
+    thumbnailBar?: 'scrollable' | 'scrubber' | 'none';
+    scrubberBar?: 'verticalRight' | 'verticalLeft';
+    thumbnailSize?: string;
+    pageMode?: 'automatic' | 'single' | 'double';
+    minZoom?: number;
+    maxZoom?: number;
+}
 export declare class TNSPSPDFKit {
     _downloadTask: any;
     private _progress;
@@ -9,7 +20,7 @@ export declare class TNSPSPDFKit {
     events: Observable;
     constructor(licenseKey: string);
     convert(src: string, outPut?: string): Promise<any>;
-    display(documentName: string): void;
+    display(documentName: string, options?: TNSPSPDFKitOptions): void;
     private downloadDocument(src);
 }
 export declare class TNSPSPDFView extends common.TNSPSPDFView {
@@ -18,14 +29,20 @@ export declare class TNSPSPDFView extends common.TNSPSPDFView {
     private _downloadTask;
     nativeView: any;
     controller: any;
+    currentSize: CGSize;
     config: any;
     private _progress;
     private _file;
+    private _observer;
     constructor();
+    private addObserver();
+    private removeObserver();
     static toggleMemoryMode(): void;
     initNativeView(): void;
     clearCache(): void;
     private setupView();
+    onLoaded(): void;
+    onUnloaded(): void;
     disposeNativeView(): void;
     onMeasure(widthMeasureSpec: number, heightMeasureSpec: number): void;
     backgroundColor: string;

@@ -5,14 +5,14 @@
 
 NativeScript implementation of PSPDFKit (https://pspdfkit.com/). Currently for iOS only, Android support is coming soon.
 
-Please note that this plugin is not production ready. You will have to fork this project to get your licensed version POD installed correctly (currently). 
+Please note that this plugin is not production ready. You will have to fork this project to get your licensed version POD installed correctly (currently).
 
 ## Installation
 `npm install nativescript-pspdfkit`
 
 ## Example Implementation
 
-# Android 
+# Android
 
 Modify the activity entry within the AndroidManifest.xml file found in the <application-name>app/App_Resources/Android/ folder
 
@@ -29,7 +29,7 @@ Modify the activity entry within the AndroidManifest.xml file found in the <appl
 Modify the defaultConfig entry within the app.gradle file found in the <application-name>app/App_Resources/Android/ folder
 
 ```
-defaultConfig {  
+defaultConfig {
     minSdkVersion 19
 ```
 
@@ -37,7 +37,21 @@ defaultConfig {
 import {TNSPSPDFKit} from 'nativescript-pspdfkit';
 let licenseKey = '';
 let pspdfkit = new TNSPSPDFKit(licenseKey);
-pspdfkit.display('~/example.pdf');
+/*
+ TNSPSPDFKitOptions {
+  scrollDirection?: 'vertical' | 'horizontal';
+  backgroundColor?: string;
+  spreadFitting?: 'adaptive' | 'fit' | 'fill';
+  thumbnailBar?: 'scrollable' | 'scrubber' | 'none';
+  scrubberBar?: 'verticalRight' | 'verticalLeft';
+  thumbnailSize?: string;
+  pageMode?: 'automatic' | 'single' | 'double';
+  minZoom?: number;
+  maxZoom?: number;
+}
+
+*/
+pspdfkit.display('~/example.pdf',{ scrollDirection: 'vertical' });
 ```
 
 IMPORTANT: Make sure you include xmlns:pspdfkit="nativescript-pspdfkit" on the Page tag
@@ -55,7 +69,7 @@ registerElement("TNSPSPDFView", () => require("nativescript-pspdfkit").TNSPSPDFV
 ```
 
 ```html
-<TNSPSPDFView scrollDirection="horizontal" scrubberBar="verticalRight" thumbnailBar="scrubber" spreadFitting="fill" src="~/example.pdf"></TNSPSPDFView>
+<TNSPSPDFView selectedIndexChange="pageChanged" scrollDirection="horizontal" scrubberBar="verticalRight" thumbnailBar="scrubber" spreadFitting="fill" src="~/example.pdf"></TNSPSPDFView>
 ```
 
 *Webpack*

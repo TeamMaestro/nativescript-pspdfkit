@@ -24,7 +24,8 @@ export class HelloWorldModel extends Observable {
   }
   showFullScreen() {
     this.pspdfkit.display(
-      'https://www.ets.org/Media/Tests/GRE/pdf/gre_research_validity_data.pdf'
+      'https://www.ets.org/Media/Tests/GRE/pdf/gre_research_validity_data.pdf',
+      { backgroundColor: 'red', scrollDirection: 'vertical' }
     );
   }
   destroyViewer() {

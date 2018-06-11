@@ -23,6 +23,19 @@ const DownloadSource = com.pspdfkit.document.download.source.DownloadSource;
 const PdfFragment = com.pspdfkit.ui.PdfFragment;
 const FormType = com.pspdfkit.forms.FormType;
 const FRAGMENT_TAG = 'PSPDFKitFragmentTag';
+
+export interface TNSPSPDFKitOptions {
+  scrollDirection?: 'vertical' | 'horizontal';
+  backgroundColor?: string;
+  spreadFitting?: 'adaptive' | 'fit' | 'fill';
+  thumbnailBar?: 'scrollable' | 'none' | 'scrubber';
+  scrubberBar?: 'verticalRight' | 'verticalLeft';
+  thumbnailSize?: string;
+  pageMode?: 'automatic' | 'single' | 'double';
+  minZoom?: number;
+  maxZoom?: number;
+}
+
 export class TNSPSPDFKit {
   private worker: Worker;
   private context: any = app.android.context;
@@ -74,12 +87,95 @@ export class TNSPSPDFKit {
   convert(src: string, outPut?: string): Promise<any> {
     return new Promise((resolve, reject) => {});
   }
-  display(documentName: string) {
+  display(documentName: string, options: TNSPSPDFKitOptions = {}) {
     this.initWorker();
     if (PSPDFKit.isInitialized()) {
       this.config = new PdfActivityConfiguration.Builder(
         app.android.context
       ).build();
+
+      if (options.backgroundColor) {
+        this.config.backgroundColor = new Color(
+          options.backgroundColor
+        ).android;
+      }
+
+      if (options.spreadFitting) {
+        switch (options.spreadFitting) {
+          case 'fit':
+            this.config.fitMode(
+              com.pspdfkit.configuration.page.PageFitMode.FIT_TO_WIDTH
+            );
+            break;
+          case 'fill':
+            this.config.fitMode(
+              com.pspdfkit.configuration.page.PageFitMode.FIT_TO_SCREEN
+            );
+            break;
+        }
+      }
+
+      if (options.thumbnailBar) {
+        switch (options.thumbnailBar) {
+          case 'none':
+            this.config.setThumbnailBarMode(
+              com.pspdfkit.configuration.activity.ThumbnailBarMode
+                .THUMBNAIL_BAR_MODE_NONE
+            );
+            break;
+          case 'scrollable':
+            this.config.setThumbnailBarMode(
+              com.pspdfkit.configuration.activity.ThumbnailBarMode
+                .THUMBNAIL_BAR_MODE_SCROLLABLE
+            );
+            break;
+          default:
+            this.config.setThumbnailBarMode(
+              com.pspdfkit.configuration.activity.ThumbnailBarMode
+                .THUMBNAIL_BAR_MODE_DEFAULT
+            );
+            break;
+        }
+      }
+
+      switch (options.pageMode) {
+        case 'single':
+          this.config.layoutMode(
+            com.pspdfkit.configuration.page.PageLayoutMode.SINGLE
+          );
+          break;
+        case 'double':
+          this.config.layoutMode(
+            com.pspdfkit.configuration.page.PageLayoutMode.DOUBLE
+          );
+          break;
+        default:
+          this.config.layoutMode(
+            com.pspdfkit.configuration.page.PageLayoutMode.AUTO
+          );
+          break;
+      }
+
+      switch (options.scrollDirection) {
+        case 'horizontal':
+          this.config.scrollDirection(
+            com.pspdfkit.configuration.page.PageScrollDirection.HORIZONTAL
+          );
+          break;
+        default:
+          this.config.scrollDirection(
+            com.pspdfkit.configuration.page.PageScrollDirection.VERTICAL
+          );
+          break;
+      }
+
+      if (options.minZoom) {
+        this.config.startZoomScale(new java.lang.Float(options.minZoom));
+      }
+      if (options.maxZoom) {
+        this.config.maxZoomScale(new java.lang.Float(options.maxZoom));
+      }
+
       let file;
       if (types.isString(documentName) && documentName.startsWith('~')) {
         file = new java.io.File(
@@ -140,6 +236,8 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
   _pageMode: any;
   _backgroundColor: string;
   _formsEnabled = true;
+  _spreadFitting: any;
+  _thumbnailBar: any;
   config: any;
   private _pageFragment: any;
   private _fragment: any;
@@ -159,6 +257,41 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
 
     if (this._backgroundColor) {
       this.config.backgroundColor = new Color(this._backgroundColor).android;
+    }
+
+    if (this._spreadFitting) {
+      switch (this._spreadFitting) {
+        case 'fit':
+          this.config.fitMode(
+            com.pspdfkit.configuration.page.PageFitMode.FIT_TO_WIDTH
+          );
+          break;
+        case 'fill':
+          this.config.fitMode(
+            com.pspdfkit.configuration.page.PageFitMode.FIT_TO_SCREEN
+          );
+          break;
+      }
+    }
+
+    switch (this._thumbnailBar) {
+      case 'none':
+        this.config.setThumbnailBarMode(
+          com.pspdfkit.configuration.activity.ThumbnailBarMode
+            .THUMBNAIL_BAR_MODE_NONE
+        );
+        break;
+      case 'scrollable':
+        this.config.setThumbnailBarMode(
+          com.pspdfkit.configuration.activity.ThumbnailBarMode
+            .THUMBNAIL_BAR_MODE_SCROLLABLE
+        );
+      default:
+        this.config.setThumbnailBarMode(
+          com.pspdfkit.configuration.activity.ThumbnailBarMode
+            .THUMBNAIL_BAR_MODE_DEFAULT
+        );
+        break;
     }
 
     if (this._pageMode) {
@@ -250,6 +383,8 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
       }
     }
   }
+
+  set spreadFitting(fit: string) {}
 
   getPageIndex(): number {
     if (this._fragment) {
