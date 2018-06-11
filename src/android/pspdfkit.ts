@@ -286,6 +286,7 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
           com.pspdfkit.configuration.activity.ThumbnailBarMode
             .THUMBNAIL_BAR_MODE_SCROLLABLE
         );
+        break;
       default:
         this.config.setThumbnailBarMode(
           com.pspdfkit.configuration.activity.ThumbnailBarMode
