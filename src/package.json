@@ -1,6 +1,6 @@
 {
     "name": "nativescript-pspdfkit",
-    "version": "4.3.3",
+    "version": "4.3.4",
     "description": "Nativescript implementation of PSPDFKit.",
     "main": "pspdfkit",
     "typings": "index.d.ts",
