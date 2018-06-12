@@ -392,6 +392,13 @@ export class TNSPSPDFView extends common.TNSPSPDFView {
     this.addObserver();
     if (!this._isSetup) {
       this._isSetup = true;
+      this.controller.view.autoresizingMask =
+        UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+      const parent = topmost().ios.controller.visibleViewController;
+      parent.addChildViewController(this.controller);
+      this.controller.view.frame = this.nativeView.bounds;
+      this.nativeView.addSubview(this.controller.view);
+      this.controller.didMoveToParentViewController(parent);
     }
   }
 
